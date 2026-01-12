@@ -62,13 +62,15 @@ Looking for a powerful AI browser agent with voice control? **Voice Browser** de
 
 ## 🚀 Quick Start
 
+> **⚠️ Important**: You must build the extension first before loading it into Chrome! See the "Build from Source" section below.
+
 1. **Build from Source** (see below) or download the latest release
 
 2. **Install the Extension**:
    * Open `chrome://extensions/` in Chrome
    * Enable `Developer mode` (top right)
    * Click `Load unpacked` (top left)
-   * Select the `dist` folder
+   * Select the **`dist`** folder (NOT the `chrome-extension` source folder!)
 
 3. **Configure Settings**:
    * Click the Voice Browser icon in your toolbar to open the sidebar
@@ -105,7 +107,9 @@ To get the most recent version with all the latest features:
 
 ## 🛠️ Build from Source
 
-If you prefer to build Nanobrowser yourself, follow these steps:
+> **⚠️ You MUST build the extension before loading it into Chrome!** The `chrome-extension` directory contains source code and cannot be loaded directly.
+
+If you prefer to build Voice Browser yourself, follow these steps:
 
 1. **Prerequisites**:
    * [Node.js](https://nodejs.org/) (v22.12.0 or higher)
@@ -113,8 +117,8 @@ If you prefer to build Nanobrowser yourself, follow these steps:
 
 2. **Clone the Repository**:
    ```bash
-   git clone https://github.com/nanobrowser/nanobrowser.git
-   cd nanobrowser
+   git clone https://github.com/Mirxa01/voice-browser.git
+   cd voice-browser
    ```
 
 3. **Install Dependencies**:
@@ -126,15 +130,20 @@ If you prefer to build Nanobrowser yourself, follow these steps:
    ```bash
    pnpm build
    ```
+   This will create the extension in the `dist/` directory with a proper `manifest.json` file.
 
 5. **Load the Extension**:
    * The built extension will be in the `dist` directory
-   * Follow the installation steps from the Manually Install section to load the extension into your browser
+   * Open `chrome://extensions/` in Chrome
+   * Enable `Developer mode` (top right)
+   * Click `Load unpacked` (top left)
+   * Select the **`dist`** directory (NOT the `chrome-extension` source directory!)
 
 6. **Development Mode** (optional):
    ```bash
    pnpm dev
    ```
+   This will watch for file changes and automatically rebuild to `dist/`.
 
 ## 🤖 Choosing Your Models
 
