@@ -5,47 +5,43 @@
 
 <div align="center">
 
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/nanobrowser)
-[![Twitter](https://img.shields.io/badge/Twitter-000000?style=for-the-badge&logo=x&logoColor=white)](https://x.com/nanobrowser_ai)
-[![Discord](https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/NN3ABHggMK)
-[<img src="https://deepwiki.com/badge.svg" height="28" alt="Ask DeepWiki">](https://deepwiki.com/nanobrowser/nanobrowser)
-[![Sponsor](https://img.shields.io/badge/Sponsor-ff69b4?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/alexchenzl)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Mirxa01/voice-browser)
 
 </div>
 
-## 🌐 Nanobrowser
+## 🎤 Voice Browser
 
-Nanobrowser is an open-source AI web automation tool that runs in your browser. A free alternative to OpenAI Operator with flexible LLM options and multi-agent system.
+Voice Browser is an open-source voice-controlled AI web automation tool that runs in your browser. Control your browser with voice commands, get voice feedback, and automate web tasks hands-free!
 
-⬇️ Get [Nanobrowser from Chrome Web Store](https://chromewebstore.google.com/detail/nanobrowser/imbddededgmcgfhfpcjmijokokekbkal) for free
+### ✨ New Voice Features
 
-👏 Join the community in [Discord](https://discord.gg/NN3ABHggMK) | [X](https://x.com/nanobrowser_ai)
+- **Live Voice Input**: Speak commands naturally and watch the AI execute them in real-time
+- **Voice Feedback**: Hear summarized results and task completion notifications
+- **User Profile**: Store your information for automatic form filling
+- **Memory & Learning**: The AI learns from successful tasks to improve over time
+- **Multi-LLM Support**: Connect to OpenAI, Anthropic, Gemini, Ollama, and more
 
-🌟 Loving Nanobrowser? Give us a star  and help spread the word!
+## 🔥 Why Voice Browser?
 
-❤️ Support the project by [sponsoring us](https://github.com/sponsors/alexchenzl) - every contribution helps keep Nanobrowser free and open source!
+Looking for a powerful AI browser agent with voice control? **Voice Browser** delivers premium web automation capabilities while keeping you in complete control:
 
-<div align="center">
-<img src="https://github.com/user-attachments/assets/112c4385-7b03-4b81-a352-4f348093351b" width="600" alt="Nanobrowser Demo GIF" />
-<p><em>Nanobrowser's multi-agent system analyzing HuggingFace in real-time, with the Planner intelligently self-correcting when encountering obstacles and dynamically instructing the Navigator to adjust its approach—all running locally in your browser.</em></p>
-</div>
+- **100% Free** - No subscription fees or hidden costs. Just install and use your own API keys.
+- **Voice-First** - Control everything with your voice, get spoken feedback.
+- **Privacy-Focused** - Everything runs in your local browser. Your credentials stay with you.
+- **Flexible LLM Options** - Connect to your preferred LLM providers.
+- **Fully Open Source** - Complete transparency in how your browser is automated.
 
-## 🔥Why Nanobrowser?
-
-Looking for a powerful AI browser agent without the $200/month price tag of OpenAI Operator? **Nanobrowser** , as a chrome extension, delivers premium web automation capabilities while keeping you in complete control:
-
-- **100% Free** - No subscription fees or hidden costs. Just install and use your own API keys, and you only pay what you use with your own API keys.
-- **Privacy-Focused** - Everything runs in your local browser. Your credentials stay with you, never shared with any cloud service.
-- **Flexible LLM Options** - Connect to your preferred LLM providers with the freedom to choose different models for different agents.
-- **Fully Open Source** - Complete transparency in how your browser is automated. No black boxes or hidden processes.
-
-> **Note:** We currently support OpenAI, Anthropic, Gemini, Ollama, Groq, Cerebras, Llama and custom OpenAI-Compatible providers, more providers will be supported.
+> **Note:** We support OpenAI, Anthropic, Gemini, Ollama, Groq, Cerebras, Llama and custom OpenAI-Compatible providers.
 
 
 ## 📊 Key Features
 
+- **Voice Control**: Speak commands to control your browser hands-free
+- **Voice Feedback**: Hear task results and notifications spoken aloud
 - **Multi-agent System**: Specialized AI agents collaborate to accomplish complex web workflows
 - **Interactive Side Panel**: Intuitive chat interface with real-time status updates
+- **User Profile**: Auto-fill forms with stored personal information
+- **Memory & Learning**: AI learns from successful patterns to improve over time
 - **Task Automation**: Seamlessly automate repetitive web automation tasks across websites
 - **Follow-up Questions**: Ask contextual follow-up questions about completed tasks
 - **Conversation History**: Easily access and manage your AI agent interaction history
@@ -61,22 +57,25 @@ Looking for a powerful AI browser agent without the $200/month price tag of Open
 **Not Supported:**
 - Firefox, Safari, and other Chromium variants (Opera, Arc, etc.)
 
-> **Note**: While Nanobrowser may function on other Chromium-based browsers, we recommend using Chrome or Edge for the best experience and guaranteed compatibility.
+> **Note**: While Voice Browser may function on other Chromium-based browsers, we recommend using Chrome or Edge for the best experience and guaranteed compatibility.
 
 
 ## 🚀 Quick Start
 
-1. **Install from Chrome Web Store** (Stable Version):
-   * Visit the [Nanobrowser Chrome Web Store page](https://chromewebstore.google.com/detail/nanobrowser/imbddededgmcgfhfpcjmijokokekbkal)
-   * Click "Add to Chrome" button
-   * Confirm the installation when prompted
+1. **Build from Source** (see below) or download the latest release
 
-> **Important Note**: For latest features, install from ["Manually Install Latest Version"](#-manually-install-latest-version) below, as Chrome Web Store version may be delayed due to review process.
+2. **Install the Extension**:
+   * Open `chrome://extensions/` in Chrome
+   * Enable `Developer mode` (top right)
+   * Click `Load unpacked` (top left)
+   * Select the `dist` folder
 
-2. **Configure Agent Models**:
-   * Click the Nanobrowser icon in your toolbar to open the sidebar
+3. **Configure Settings**:
+   * Click the Voice Browser icon in your toolbar to open the sidebar
    * Click the `Settings` icon (top right)
    * Add your LLM API keys
+   * Configure voice settings (enable TTS, select voice)
+   * Set up your user profile for form auto-filling
    * Choose which model to use for different agents (Navigator, Planner)
 
 ## 🔧 Manually Install Latest Version
