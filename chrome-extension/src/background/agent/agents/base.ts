@@ -103,6 +103,75 @@ export abstract class BaseAgent<T extends z.ZodType, M = unknown> {
     return modelName.includes('Llama-4') || modelName.includes('Llama-3.3') || modelName.includes('llama-3.3');
   }
 
+  /**
+   * Check if the current model supports vision/image inputs
+   * Models that don't support vision will have images stripped from messages
+   */
+  protected supportsVision(): boolean {
+    const modelNameLower = this.modelName.toLowerCase();
+
+    // Gemini models - only specific models support vision
+    if (this.provider === ProviderTypeEnum.Gemini || this.chatModelLibrary === 'ChatGoogleGenerativeAI') {
+      // Preview models typically don't support vision
+      if (modelNameLower.includes('preview')) {
+        logger.debug(`[${this.modelName}] Gemini preview model does not support vision`);
+        return false;
+      }
+      // Flash models with version 2.0+ support vision
+      if (modelNameLower.includes('flash') && modelNameLower.includes('2.')) {
+        return true;
+      }
+      // Pro models with version 2.0+ support vision
+      if (modelNameLower.includes('pro') && modelNameLower.includes('2.')) {
+        return true;
+      }
+      // Default for Gemini: assume no vision for safety
+      logger.debug(`[${this.modelName}] Gemini model vision support unclear, defaulting to no vision`);
+      return false;
+    }
+
+    // Most OpenAI models support vision (gpt-4o, gpt-4-turbo, etc.)
+    if (this.provider === ProviderTypeEnum.OpenAI || this.chatModelLibrary === 'ChatOpenAI') {
+      // GPT-4o and newer support vision
+      if (modelNameLower.includes('gpt-4o') || modelNameLower.includes('gpt-5')) {
+        return true;
+      }
+      // GPT-4 Vision models
+      if (modelNameLower.includes('vision')) {
+        return true;
+      }
+      // GPT-4 Turbo models support vision
+      if (modelNameLower.includes('gpt-4-turbo')) {
+        return true;
+      }
+      // Default: older models don't support vision
+      return false;
+    }
+
+    // Claude models with vision support
+    if (this.provider === ProviderTypeEnum.Anthropic || this.chatModelLibrary === 'ChatAnthropic') {
+      // Claude 3+ models support vision
+      if (modelNameLower.includes('claude-3') || modelNameLower.includes('claude-4')) {
+        return true;
+      }
+      return false;
+    }
+
+    // Llama models generally don't support vision in the API
+    if (this.provider === ProviderTypeEnum.Llama || this.isLlamaModel(this.modelName)) {
+      return false;
+    }
+
+    // DeepSeek models generally don't support vision
+    if (this.provider === ProviderTypeEnum.DeepSeek) {
+      return false;
+    }
+
+    // For other providers, default to no vision support for safety
+    logger.debug(`[${this.modelName}] Vision support unknown for provider ${this.provider}, defaulting to no vision`);
+    return false;
+  }
+
   // Set whether to use structured output based on the model name
   private setWithStructuredOutput(): boolean {
     if (this.modelName === 'deepseek-reasoner' || this.modelName === 'deepseek-r1') {
@@ -119,11 +188,14 @@ export abstract class BaseAgent<T extends z.ZodType, M = unknown> {
   }
 
   async invoke(inputMessages: BaseMessage[]): Promise<this['ModelOutput']> {
+    // Strip images from messages if model doesn't support vision
+    const processedMessages = this.stripImagesFromMessages(inputMessages);
+
     // Use structured output
     if (this.withStructuredOutput) {
       logger.debug(`[${this.modelName}] Preparing structured output call with schema:`, {
         schemaName: this.modelOutputToolName,
-        messageCount: inputMessages.length,
+        messageCount: processedMessages.length,
         modelProvider: this.provider,
       });
 
@@ -135,7 +207,7 @@ export abstract class BaseAgent<T extends z.ZodType, M = unknown> {
       let response = undefined;
       try {
         logger.debug(`[${this.modelName}] Invoking LLM with structured output...`);
-        response = await structuredLlm.invoke(inputMessages, {
+        response = await structuredLlm.invoke(processedMessages, {
           signal: this.context.controller.signal,
           ...this.callOptions,
         });
@@ -176,7 +248,7 @@ export abstract class BaseAgent<T extends z.ZodType, M = unknown> {
 
     // Fallback: Without structured output support, need to extract JSON from model output manually
     logger.debug(`[${this.modelName}] Using manual JSON extraction fallback method`);
-    const convertedInputMessages = convertInputMessages(inputMessages, this.modelName);
+    const convertedInputMessages = convertInputMessages(processedMessages, this.modelName);
 
     try {
       const response = await this.chatLLM.invoke(convertedInputMessages, {
@@ -223,5 +295,37 @@ export abstract class BaseAgent<T extends z.ZodType, M = unknown> {
       logger.warning('manuallyParseResponse failed', error);
       return undefined;
     }
+  }
+
+  /**
+   * Strip images from messages for models that don't support vision
+   * Converts image messages to text-only messages
+   */
+  protected stripImagesFromMessages(messages: BaseMessage[]): BaseMessage[] {
+    if (this.supportsVision()) {
+      return messages;
+    }
+
+    logger.debug(`[${this.modelName}] Stripping images from messages - model does not support vision`);
+
+    return messages.map(message => {
+      // Check if message has array content (which may include images)
+      if (Array.isArray(message.content)) {
+        // Filter out image_url content, keep only text
+        const textContent = message.content
+          .filter(item => item.type === 'text')
+          .map(item => ('text' in item ? item.text : ''))
+          .join('\n');
+
+        // Return a new message with text-only content
+        return new message.constructor({
+          ...message,
+          content: textContent,
+        }) as BaseMessage;
+      }
+
+      // If content is not an array, return message as-is
+      return message;
+    });
   }
 }
