@@ -327,14 +327,14 @@ export const ProfileSettings = ({ isDarkMode = false }: ProfileSettingsProps) =>
                   setNewCredential({ site: '', username: '', password: '' });
                 }}
                 className={`rounded-md px-4 py-2 text-sm font-medium ${isDarkMode ? 'bg-slate-600 text-gray-200 hover:bg-slate-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>
-                Cancel
+                {t('common_cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleAddCredential}
                 disabled={!newCredential.site || !newCredential.username}
                 className={`rounded-md px-4 py-2 text-sm font-medium ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-slate-500' : 'bg-blue-500 text-white hover:bg-blue-600 disabled:bg-gray-300'}`}>
-                Add
+                {t('common_add')}
               </button>
             </div>
           </div>

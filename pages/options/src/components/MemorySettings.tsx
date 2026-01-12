@@ -113,7 +113,7 @@ export const MemorySettingsComponent = ({ isDarkMode = false }: MemorySettingsPr
                       type="button"
                       onClick={() => setShowClearConfirm(false)}
                       className={`rounded-md px-4 py-2 text-sm font-medium ${isDarkMode ? 'bg-slate-600 text-gray-200 hover:bg-slate-500' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>
-                      Cancel
+                      {t('common_cancel')}
                     </button>
                     <button
                       type="button"
@@ -142,7 +142,7 @@ export const MemorySettingsComponent = ({ isDarkMode = false }: MemorySettingsPr
           type="button"
           onClick={handleSave}
           className={`rounded-md px-6 py-2 text-sm font-medium ${isDarkMode ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-blue-500 text-white hover:bg-blue-600'} ${isSaved ? 'bg-green-500 hover:bg-green-600' : ''}`}>
-          {isSaved ? '✓ Saved' : 'Save Settings'}
+          {isSaved ? '✓ ' + t('common_saved') : t('common_save_settings')}
         </button>
       </div>
     </section>

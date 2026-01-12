@@ -1154,5 +1154,24 @@
         "example": "5"
       }
     }
+  },
+
+  "common_cancel": {
+    "message": "Cancel"
+  },
+  "common_add": {
+    "message": "Add"
+  },
+  "common_save_settings": {
+    "message": "Save Settings"
+  },
+  "common_saved": {
+    "message": "Saved"
+  },
+  "options_voice_test_button": {
+    "message": "Test Voice"
+  },
+  "voice_feedback_task_failed_generic": {
+    "message": "Task failed"
   }
 }

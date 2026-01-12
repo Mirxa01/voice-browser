@@ -215,7 +215,7 @@ const SidePanel = () => {
               if (content) {
                 speakText(t('voice_feedback_task_failed', [content.substring(0, 100)]));
               } else {
-                speakText('Task failed');
+                speakText(t('voice_feedback_task_failed_generic'));
               }
               break;
             case ExecutionState.TASK_CANCEL:
