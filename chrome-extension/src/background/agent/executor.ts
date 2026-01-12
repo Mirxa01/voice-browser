@@ -183,6 +183,9 @@ export class Executor {
 
         // Track task completion
         void analytics.trackTaskComplete(this.context.taskId);
+
+        // Store learned pattern from successful task (async, don't await)
+        void this.storeLearnedPattern();
       } else if (step >= allowedMaxSteps) {
         logger.error('❌ Task failed: Max steps reached');
         this.context.emitEvent(Actors.SYSTEM, ExecutionState.TASK_FAIL, t('exec_errors_maxStepsReached'));
@@ -227,6 +230,67 @@ export class Executor {
         logger.info('Replay historical tasks is disabled, skipping history storage');
       }
     }
+  }
+
+  /**
+   * Store learned pattern from successful task execution
+   */
+  private async storeLearnedPattern(): Promise<void> {
+    try {
+      const { memoryStore } = await import('@extension/storage');
+
+      // Check if memory/learning is enabled
+      const isEnabled = await memoryStore.isEnabled();
+      if (!isEnabled) {
+        logger.info('Memory learning is disabled, skipping pattern storage');
+        return;
+      }
+
+      // Get current URL domain
+      const browserState = await this.context.browserContext.getState();
+      const currentUrl = browserState?.url || '';
+      let domain = '';
+      try {
+        domain = new URL(currentUrl).hostname;
+      } catch {
+        domain = 'unknown';
+      }
+
+      // Extract task type from the task description
+      const task = this.tasks[0] || '';
+      const taskType = this.categorizeTask(task);
+
+      // Create a pattern from the successful execution
+      const actionSequence = this.context.actionResults
+        .filter(r => r.includeInMemory)
+        .map(r => `${r.action}: ${r.description || ''}`);
+
+      await memoryStore.addPattern({
+        taskType,
+        domain,
+        description: task.substring(0, 200),
+        actionSequence,
+        lastUsed: Date.now(),
+      });
+
+      logger.info(`Stored learned pattern for task type: ${taskType} on domain: ${domain}`);
+    } catch (error) {
+      logger.error('Failed to store learned pattern:', error);
+    }
+  }
+
+  /**
+   * Categorize task type from description
+   */
+  private categorizeTask(task: string): string {
+    const taskLower = task.toLowerCase();
+    if (taskLower.includes('search') || taskLower.includes('find')) return 'search';
+    if (taskLower.includes('fill') || taskLower.includes('form')) return 'form-fill';
+    if (taskLower.includes('login') || taskLower.includes('sign in')) return 'login';
+    if (taskLower.includes('click') || taskLower.includes('navigate')) return 'navigation';
+    if (taskLower.includes('extract') || taskLower.includes('scrape') || taskLower.includes('get')) return 'extraction';
+    if (taskLower.includes('buy') || taskLower.includes('purchase') || taskLower.includes('order')) return 'purchase';
+    return 'general';
   }
 
   /**

@@ -4,7 +4,14 @@ import { RxDiscordLogo } from 'react-icons/rx';
 import { FiSettings } from 'react-icons/fi';
 import { PiPlusBold } from 'react-icons/pi';
 import { GrHistory } from 'react-icons/gr';
-import { type Message, Actors, chatHistoryStore, agentModelStore, generalSettingsStore } from '@extension/storage';
+import {
+  type Message,
+  Actors,
+  chatHistoryStore,
+  agentModelStore,
+  generalSettingsStore,
+  voiceSettingsStore,
+} from '@extension/storage';
 import favoritesStorage, { type FavoritePrompt } from '@extension/storage/lib/prompt/favorites';
 import { t } from '@extension/i18n';
 import MessageList from './components/MessageList';
@@ -20,6 +27,35 @@ declare global {
     chrome: typeof chrome;
   }
 }
+
+// Text-to-Speech helper for voice feedback
+const speakText = async (text: string) => {
+  try {
+    const settings = await voiceSettingsStore.getSettings();
+    if (!settings.ttsEnabled) return;
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Set voice if configured
+    if (settings.ttsVoice) {
+      const voices = window.speechSynthesis.getVoices();
+      const voice = voices.find(v => v.name === settings.ttsVoice);
+      if (voice) {
+        utterance.voice = voice;
+      }
+    }
+
+    utterance.rate = settings.ttsRate;
+    utterance.pitch = settings.ttsPitch;
+
+    window.speechSynthesis.speak(utterance);
+  } catch (error) {
+    console.error('TTS error:', error);
+  }
+};
 
 const SidePanel = () => {
   const progressMessage = 'Showing progress...';
@@ -166,6 +202,8 @@ const SidePanel = () => {
               setInputEnabled(true);
               setShowStopButton(false);
               setIsReplaying(false);
+              // Provide voice feedback for task completion
+              speakText(t('voice_feedback_task_complete'));
               break;
             case ExecutionState.TASK_FAIL:
               setIsFollowUpMode(true);
@@ -173,6 +211,12 @@ const SidePanel = () => {
               setShowStopButton(false);
               setIsReplaying(false);
               skip = false;
+              // Provide voice feedback for task failure
+              if (content) {
+                speakText(t('voice_feedback_task_failed', content.substring(0, 100)));
+              } else {
+                speakText('Task failed');
+              }
               break;
             case ExecutionState.TASK_CANCEL:
               setIsFollowUpMode(false);
