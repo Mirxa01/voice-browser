@@ -1,11 +1,11 @@
 {
   "app_metadata_description": {
     "description": "Extension description",
-    "message": "Automate web tasks with AI! NanoBrowser is an open-source browser extension that lets you extract data, fill forms, and more."
+    "message": "Voice-controlled AI web automation! Voice Browser lets you control your browser with voice commands, extract data, fill forms, and get voice feedback."
   },
   "app_metadata_name": {
     "description": "Extension name",
-    "message": "Nanobrowser: AI Web Agent & Automation"
+    "message": "Voice Browser: AI Web Agent & Voice Automation"
   },
   "errors_unknown": {
     "message": "Unknown error occurred"
@@ -38,7 +38,7 @@
     "message": "Back to chat"
   },
   "welcome_title": {
-    "message": "Welcome to Nanobrowser!"
+    "message": "Welcome to Voice Browser!"
   },
   "welcome_instruction": {
     "message": "To get started, please configure your API keys in the settings page."
@@ -167,7 +167,7 @@
     "message": "Enable Voice Input"
   },
   "permissions_microphone_description": {
-    "message": "Nanobrowser needs microphone access to convert your speech to text."
+    "message": "Voice Browser needs microphone access to convert your speech to text."
   },
   "permissions_microphone_grantButton": {
     "message": "Grant Microphone Permission"
@@ -965,6 +965,268 @@
       "error": {
         "content": "$1",
         "example": "Option not found"
+      }
+    }
+  },
+
+  "voice_tts_enabled": {
+    "message": "Voice feedback enabled"
+  },
+  "voice_tts_disabled": {
+    "message": "Voice feedback disabled"
+  },
+  "voice_tts_speaking": {
+    "message": "Speaking..."
+  },
+  "voice_tts_stopped": {
+    "message": "Stopped speaking"
+  },
+  "voice_live_mode_enabled": {
+    "message": "Live voice mode enabled - listening for commands"
+  },
+  "voice_live_mode_disabled": {
+    "message": "Live voice mode disabled"
+  },
+  "voice_command_received": {
+    "message": "Command received: $COMMAND$",
+    "placeholders": {
+      "command": {
+        "content": "$1",
+        "example": "Navigate to Google"
+      }
+    }
+  },
+  "voice_feedback_task_complete": {
+    "message": "Task completed successfully"
+  },
+  "voice_feedback_task_failed": {
+    "message": "Task failed: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Connection timeout"
+      }
+    }
+  },
+
+  "options_tabs_profile": {
+    "message": "Profile"
+  },
+  "options_tabs_voice": {
+    "message": "Voice"
+  },
+  "options_profile_header": {
+    "message": "User Profile"
+  },
+  "options_profile_description": {
+    "message": "Store your personal information for auto-filling forms. This data is stored locally and never shared."
+  },
+  "options_profile_personal_header": {
+    "message": "Personal Information"
+  },
+  "options_profile_firstName": {
+    "message": "First Name"
+  },
+  "options_profile_lastName": {
+    "message": "Last Name"
+  },
+  "options_profile_email": {
+    "message": "Email"
+  },
+  "options_profile_phone": {
+    "message": "Phone"
+  },
+  "options_profile_address_header": {
+    "message": "Address"
+  },
+  "options_profile_street": {
+    "message": "Street Address"
+  },
+  "options_profile_city": {
+    "message": "City"
+  },
+  "options_profile_state": {
+    "message": "State/Province"
+  },
+  "options_profile_zipCode": {
+    "message": "ZIP/Postal Code"
+  },
+  "options_profile_country": {
+    "message": "Country"
+  },
+  "options_profile_credentials_header": {
+    "message": "Saved Credentials"
+  },
+  "options_profile_credentials_description": {
+    "message": "Store login credentials for the agent to use. Data is encrypted and stored locally."
+  },
+  "options_profile_credentials_add": {
+    "message": "Add Credential"
+  },
+  "options_profile_credentials_site": {
+    "message": "Website/Service"
+  },
+  "options_profile_credentials_username": {
+    "message": "Username"
+  },
+  "options_profile_credentials_password": {
+    "message": "Password"
+  },
+  "options_profile_btnSave": {
+    "message": "Save Profile"
+  },
+  "options_profile_saved": {
+    "message": "Profile saved successfully"
+  },
+
+  "options_voice_header": {
+    "message": "Voice Settings"
+  },
+  "options_voice_tts_header": {
+    "message": "Text-to-Speech"
+  },
+  "options_voice_tts_enabled": {
+    "message": "Enable Voice Feedback"
+  },
+  "options_voice_tts_enabled_desc": {
+    "message": "Speak task results and important notifications"
+  },
+  "options_voice_tts_voice": {
+    "message": "Voice"
+  },
+  "options_voice_tts_voice_desc": {
+    "message": "Select the voice for speech output"
+  },
+  "options_voice_tts_rate": {
+    "message": "Speech Rate"
+  },
+  "options_voice_tts_pitch": {
+    "message": "Pitch"
+  },
+  "options_voice_live_header": {
+    "message": "Live Voice Control"
+  },
+  "options_voice_live_enabled": {
+    "message": "Enable Live Voice Mode"
+  },
+  "options_voice_live_enabled_desc": {
+    "message": "Continuously listen for voice commands (experimental)"
+  },
+  "options_voice_wake_word": {
+    "message": "Wake Word"
+  },
+  "options_voice_wake_word_desc": {
+    "message": "Say this word to activate voice input (e.g., 'Hey Browser')"
+  },
+
+  "options_memory_header": {
+    "message": "Memory & Learning"
+  },
+  "options_memory_enabled": {
+    "message": "Enable Learning"
+  },
+  "options_memory_enabled_desc": {
+    "message": "Let the agent learn from successful tasks to improve over time"
+  },
+  "options_memory_clear": {
+    "message": "Clear Memory"
+  },
+  "options_memory_clear_confirm": {
+    "message": "Are you sure you want to clear all learned patterns? This cannot be undone."
+  },
+  "options_memory_cleared": {
+    "message": "Memory cleared successfully"
+  },
+  "options_memory_count": {
+    "message": "$COUNT$ patterns learned",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "15"
+      }
+    }
+  },
+  "options_memory_preferences_count": {
+    "message": "$COUNT$ preferences stored",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+
+  "common_cancel": {
+    "message": "Cancel"
+  },
+  "common_add": {
+    "message": "Add"
+  },
+  "common_save_settings": {
+    "message": "Save Settings"
+  },
+  "common_saved": {
+    "message": "Saved"
+  },
+  "options_voice_test_button": {
+    "message": "Test Voice"
+  },
+  "voice_feedback_task_failed_generic": {
+    "message": "Task failed"
+  },
+
+  "act_autoFill_start": {
+    "message": "Auto-filling form with profile data"
+  },
+  "act_autoFill_ok": {
+    "message": "Successfully filled $COUNT$ form fields",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "act_autoFill_noData": {
+    "message": "No profile data available to fill the form. Please configure your profile in settings."
+  },
+  "act_autoFill_failed": {
+    "message": "Failed to auto-fill form: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Connection error"
+      }
+    }
+  },
+
+  "act_useCredential_start": {
+    "message": "Using stored credentials for login"
+  },
+  "act_useCredential_ok": {
+    "message": "Successfully filled login credentials for $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "act_useCredential_noCredential": {
+    "message": "No saved credentials found for $SITE$. Please add credentials in the Profile settings.",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "act_useCredential_failed": {
+    "message": "Failed to use credentials: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Connection error"
       }
     }
   }

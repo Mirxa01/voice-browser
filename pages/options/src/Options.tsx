@@ -3,17 +3,21 @@ import '@src/Options.css';
 import { Button } from '@extension/ui';
 import { withErrorBoundary, withSuspense } from '@extension/shared';
 import { t } from '@extension/i18n';
-import { FiSettings, FiCpu, FiShield, FiTrendingUp, FiHelpCircle } from 'react-icons/fi';
+import { FiSettings, FiCpu, FiShield, FiTrendingUp, FiHelpCircle, FiMic, FiUser } from 'react-icons/fi';
 import { GeneralSettings } from './components/GeneralSettings';
 import { ModelSettings } from './components/ModelSettings';
 import { FirewallSettings } from './components/FirewallSettings';
 import { AnalyticsSettings } from './components/AnalyticsSettings';
+import { VoiceSettingsComponent } from './components/VoiceSettings';
+import { ProfileSettings } from './components/ProfileSettings';
 
-type TabTypes = 'general' | 'models' | 'firewall' | 'analytics' | 'help';
+type TabTypes = 'general' | 'models' | 'firewall' | 'analytics' | 'voice' | 'profile' | 'help';
 
 const TABS: { id: TabTypes; icon: React.ComponentType<{ className?: string }>; label: string }[] = [
   { id: 'general', icon: FiSettings, label: t('options_tabs_general') },
   { id: 'models', icon: FiCpu, label: t('options_tabs_models') },
+  { id: 'voice', icon: FiMic, label: t('options_tabs_voice') },
+  { id: 'profile', icon: FiUser, label: t('options_tabs_profile') },
   { id: 'firewall', icon: FiShield, label: t('options_tabs_firewall') },
   { id: 'analytics', icon: FiTrendingUp, label: 'Analytics' },
   { id: 'help', icon: FiHelpCircle, label: t('options_tabs_help') },
@@ -38,7 +42,7 @@ const Options = () => {
 
   const handleTabClick = (tabId: TabTypes) => {
     if (tabId === 'help') {
-      window.open('https://nanobrowser.ai/docs', '_blank');
+      window.open('https://github.com/Mirxa01/voice-browser', '_blank');
     } else {
       setActiveTab(tabId);
     }
@@ -54,6 +58,10 @@ const Options = () => {
         return <FirewallSettings isDarkMode={isDarkMode} />;
       case 'analytics':
         return <AnalyticsSettings isDarkMode={isDarkMode} />;
+      case 'voice':
+        return <VoiceSettingsComponent isDarkMode={isDarkMode} />;
+      case 'profile':
+        return <ProfileSettings isDarkMode={isDarkMode} />;
       default:
         return null;
     }
