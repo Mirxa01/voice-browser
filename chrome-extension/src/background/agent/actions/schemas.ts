@@ -213,3 +213,34 @@ export const waitActionSchema: ActionSchema = {
     seconds: z.number().int().default(3).describe('amount of seconds'),
   }),
 };
+
+export const autoFillFormActionSchema: ActionSchema = {
+  name: 'auto_fill_form',
+  description:
+    'Auto-fill form fields using stored user profile data. Use this when the user asks to fill a form with their saved information like name, email, phone, or address.',
+  schema: z.object({
+    intent: z.string().default('').describe('purpose of this action'),
+    fields: z
+      .array(
+        z.object({
+          index: z.number().int().describe('index of the form field element'),
+          fieldType: z
+            .enum(['firstName', 'lastName', 'email', 'phone', 'street', 'city', 'state', 'zipCode', 'country'])
+            .describe('type of profile data to fill'),
+        }),
+      )
+      .describe('array of form fields to fill with their corresponding profile data types'),
+  }),
+};
+
+export const useCredentialActionSchema: ActionSchema = {
+  name: 'use_credential',
+  description:
+    'Use stored credentials to fill login forms. The agent will find matching credentials for the current site and fill username/password fields.',
+  schema: z.object({
+    intent: z.string().default('').describe('purpose of this action'),
+    usernameIndex: z.number().int().describe('index of the username/email input field'),
+    passwordIndex: z.number().int().describe('index of the password input field'),
+    site: z.string().optional().describe('optional site name to match credentials against'),
+  }),
+};

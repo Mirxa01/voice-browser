@@ -22,12 +22,15 @@ import {
   nextPageActionSchema,
   scrollToTopActionSchema,
   scrollToBottomActionSchema,
+  autoFillFormActionSchema,
+  useCredentialActionSchema,
 } from './schemas';
 import { z } from 'zod';
 import { createLogger } from '@src/background/log';
 import { ExecutionState, Actors } from '../event/types';
 import type { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { wrapUntrustedContent } from '../messages/utils';
+import { userStore } from '@extension/storage';
 
 const logger = createLogger('Action');
 
@@ -701,6 +704,128 @@ export class ActionBuilder {
       true,
     );
     actions.push(selectDropdownOption);
+
+    // Auto-fill form with profile data
+    const autoFillForm = new Action(
+      async (input: z.infer<typeof autoFillFormActionSchema.schema>) => {
+        const intent = input.intent || t('act_autoFill_start');
+        this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_START, intent);
+
+        try {
+          const profile = await userStore.getFormData();
+          const page = await this.context.browserContext.getCurrentPage();
+          const state = await page.getState();
+
+          const filledFields: string[] = [];
+
+          // Type-safe mapping of field types to profile properties
+          const fieldTypeToProfile: Record<string, keyof typeof profile> = {
+            firstName: 'firstName',
+            lastName: 'lastName',
+            email: 'email',
+            phone: 'phone',
+            street: 'street',
+            city: 'city',
+            state: 'state',
+            zipCode: 'zipCode',
+            country: 'country',
+          };
+
+          for (const field of input.fields) {
+            const elementNode = state?.selectorMap.get(field.index);
+            if (!elementNode) {
+              logger.warning(`Element not found at index ${field.index}`);
+              continue;
+            }
+
+            const profileKey = fieldTypeToProfile[field.fieldType];
+            const value = profileKey ? profile[profileKey] : undefined;
+            if (value) {
+              await page.inputTextElementNode(this.context.options.useVision, elementNode, value);
+              filledFields.push(`${field.fieldType}: ${value}`);
+            }
+          }
+
+          if (filledFields.length === 0) {
+            const msg = t('act_autoFill_noData');
+            this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_OK, msg);
+            return new ActionResult({ extractedContent: msg, includeInMemory: true });
+          }
+
+          const msg = t('act_autoFill_ok', [filledFields.length.toString()]);
+          this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_OK, msg);
+          return new ActionResult({ extractedContent: msg, includeInMemory: true });
+        } catch (error) {
+          const errorMsg = t('act_autoFill_failed', [error instanceof Error ? error.message : String(error)]);
+          this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_FAIL, errorMsg);
+          return new ActionResult({ error: errorMsg, includeInMemory: true });
+        }
+      },
+      autoFillFormActionSchema,
+      true,
+    );
+    actions.push(autoFillForm);
+
+    // Use stored credential for login
+    const useCredential = new Action(
+      async (input: z.infer<typeof useCredentialActionSchema.schema>) => {
+        const intent = input.intent || t('act_useCredential_start');
+        this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_START, intent);
+
+        try {
+          // Get current URL to match credentials
+          const browserState = await this.context.browserContext.getState();
+          const currentUrl = browserState?.url || '';
+          let domain = input.site || '';
+
+          if (!domain) {
+            try {
+              domain = new URL(currentUrl).hostname;
+            } catch {
+              domain = '';
+            }
+          }
+
+          // Find matching credential
+          const credential = await userStore.getCredentialForSite(domain);
+
+          if (!credential) {
+            const msg = t('act_useCredential_noCredential', [domain]);
+            this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_OK, msg);
+            return new ActionResult({ extractedContent: msg, includeInMemory: true });
+          }
+
+          const page = await this.context.browserContext.getCurrentPage();
+          const state = await page.getState();
+
+          // Fill username
+          const usernameNode = state?.selectorMap.get(input.usernameIndex);
+          if (usernameNode) {
+            await page.inputTextElementNode(this.context.options.useVision, usernameNode, credential.username);
+          }
+
+          // Fill password
+          const passwordNode = state?.selectorMap.get(input.passwordIndex);
+          if (passwordNode) {
+            await page.inputTextElementNode(this.context.options.useVision, passwordNode, credential.password);
+          }
+
+          // Update last used timestamp
+          await userStore.updateCredential(credential.id, { lastUsed: Date.now() });
+
+          const msg = t('act_useCredential_ok', [credential.site]);
+          this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_OK, msg);
+          return new ActionResult({ extractedContent: msg, includeInMemory: true });
+        } catch (error) {
+          const errorMsg = t('act_useCredential_failed', [error instanceof Error ? error.message : String(error)]);
+          this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_FAIL, errorMsg);
+          return new ActionResult({ error: errorMsg, includeInMemory: true });
+        }
+      },
+      useCredentialActionSchema,
+      true,
+    );
+    actions.push(useCredential);
 
     return actions;
   }
