@@ -41,14 +41,15 @@ export const VoiceSettingsComponent = ({ isDarkMode = false }: VoiceSettingsProp
 
     loadVoices();
 
-    // Voices may load asynchronously
+    // Voices may load asynchronously - use addEventListener for proper event handling
+    const handleVoicesChanged = () => loadVoices();
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = loadVoices;
+      window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
     }
 
     return () => {
       if ('speechSynthesis' in window) {
-        window.speechSynthesis.onvoiceschanged = null;
+        window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
       }
     };
   }, []);
@@ -150,7 +151,12 @@ export const VoiceSettingsComponent = ({ isDarkMode = false }: VoiceSettingsProp
                     max="2"
                     step="0.1"
                     value={settings.ttsRate}
-                    onChange={e => handleSettingChange('ttsRate', Number.parseFloat(e.target.value))}
+                    onChange={e => {
+                      const value = Number.parseFloat(e.target.value);
+                      if (!Number.isNaN(value) && value >= 0.5 && value <= 2) {
+                        handleSettingChange('ttsRate', value);
+                      }
+                    }}
                     className={`flex-1 ${isDarkMode ? 'accent-blue-500' : 'accent-blue-400'} h-1 appearance-none rounded-full`}
                     style={{
                       background: `linear-gradient(to right, ${isDarkMode ? '#3b82f6' : '#60a5fa'} 0%, ${isDarkMode ? '#3b82f6' : '#60a5fa'} ${((settings.ttsRate - 0.5) / 1.5) * 100}%, ${isDarkMode ? '#475569' : '#cbd5e1'} ${((settings.ttsRate - 0.5) / 1.5) * 100}%, ${isDarkMode ? '#475569' : '#cbd5e1'} 100%)`,
@@ -174,7 +180,12 @@ export const VoiceSettingsComponent = ({ isDarkMode = false }: VoiceSettingsProp
                     max="2"
                     step="0.1"
                     value={settings.ttsPitch}
-                    onChange={e => handleSettingChange('ttsPitch', Number.parseFloat(e.target.value))}
+                    onChange={e => {
+                      const value = Number.parseFloat(e.target.value);
+                      if (!Number.isNaN(value) && value >= 0.5 && value <= 2) {
+                        handleSettingChange('ttsPitch', value);
+                      }
+                    }}
                     className={`flex-1 ${isDarkMode ? 'accent-blue-500' : 'accent-blue-400'} h-1 appearance-none rounded-full`}
                     style={{
                       background: `linear-gradient(to right, ${isDarkMode ? '#3b82f6' : '#60a5fa'} 0%, ${isDarkMode ? '#3b82f6' : '#60a5fa'} ${((settings.ttsPitch - 0.5) / 1.5) * 100}%, ${isDarkMode ? '#475569' : '#cbd5e1'} ${((settings.ttsPitch - 0.5) / 1.5) * 100}%, ${isDarkMode ? '#475569' : '#cbd5e1'} 100%)`,

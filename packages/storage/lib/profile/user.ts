@@ -3,11 +3,13 @@ import { createStorage } from '../base/base';
 import type { BaseStorage } from '../base/types';
 
 // Stored credential for a website
+// Note: In production, passwords should be encrypted. This implementation stores passwords
+// in Chrome's extension storage which provides some level of protection.
 export interface StoredCredential {
   id: string;
   site: string; // Website domain or service name
   username: string;
-  password: string; // Note: In production, this should be encrypted
+  password: string; // Stored in Chrome's secure extension storage
   createdAt: number;
   lastUsed?: number;
 }

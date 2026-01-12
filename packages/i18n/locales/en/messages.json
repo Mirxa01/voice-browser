@@ -1145,5 +1145,14 @@
         "example": "15"
       }
     }
+  },
+  "options_memory_preferences_count": {
+    "message": "$COUNT$ preferences stored",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
   }
 }

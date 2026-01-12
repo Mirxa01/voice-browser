@@ -91,10 +91,10 @@ export const MemorySettingsComponent = ({ isDarkMode = false }: MemorySettingsPr
           {settings.enabled && (
             <div className={`rounded-md p-4 ${isDarkMode ? 'bg-slate-700' : 'bg-white'}`}>
               <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                {t('options_memory_count', String(stats.patternCount))}
+                {t('options_memory_count', [String(stats.patternCount)])}
               </p>
               <p className={`mt-1 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                {stats.preferenceCount} preferences stored
+                {t('options_memory_preferences_count', [String(stats.preferenceCount)])}
               </p>
             </div>
           )}

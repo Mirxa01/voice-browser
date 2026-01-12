@@ -21,7 +21,7 @@ import {
   MaxFailuresReachedError,
 } from './agents/errors';
 import { URLNotAllowedError } from '../browser/views';
-import { chatHistoryStore } from '@extension/storage/lib/chat';
+import { chatHistoryStore, memoryStore } from '@extension/storage';
 import type { AgentStepHistory } from './history';
 import type { GeneralSettingsConfig } from '@extension/storage';
 import { analytics } from '../services/analytics';
@@ -237,8 +237,6 @@ export class Executor {
    */
   private async storeLearnedPattern(): Promise<void> {
     try {
-      const { memoryStore } = await import('@extension/storage');
-
       // Check if memory/learning is enabled
       const isEnabled = await memoryStore.isEnabled();
       if (!isEnabled) {

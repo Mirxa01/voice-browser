@@ -213,7 +213,7 @@ const SidePanel = () => {
               skip = false;
               // Provide voice feedback for task failure
               if (content) {
-                speakText(t('voice_feedback_task_failed', content.substring(0, 100)));
+                speakText(t('voice_feedback_task_failed', [content.substring(0, 100)]));
               } else {
                 speakText('Task failed');
               }
