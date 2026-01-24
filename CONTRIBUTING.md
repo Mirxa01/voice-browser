@@ -1,6 +1,6 @@
-# Contributing to NanoBrowser
+# Contributing to Voice Browser
 
-We deeply appreciate your interest in contributing to NanoBrowser! Every contribution helps make Nanobrowser more powerful and accessible for everyone.
+We deeply appreciate your interest in contributing to Voice Browser! Every contribution helps make Voice Browser more powerful and accessible for everyone.
 
 ## Quick Start
 
