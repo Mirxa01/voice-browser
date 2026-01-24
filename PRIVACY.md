@@ -1,17 +1,17 @@
-# Privacy Policy for Voice Browser
+# Privacy Policy for Mirza Browser
 
 ## Introduction
 
-[Voice Browser](https://github.com/voice-browser/voice-browser) is an open-source AI web automation Chrome extension. This Privacy Policy explains how we handle your data and protect your privacy.
+[Mirza Browser](https://github.com/voice-browser/voice-browser) is an open-source AI web automation Chrome extension. This Privacy Policy explains how we handle your data and protect your privacy.
 
 ## Open Source
 
-Voice Browser is licensed under Apache License 2.0. All source code is publicly available in our [GitHub repository](https://github.com/voice-browser/voice-browser), ensuring complete transparency.
+Mirza Browser is licensed under Apache License 2.0. All source code is publicly available in our [GitHub repository](https://github.com/voice-browser/voice-browser), ensuring complete transparency.
 
 ## Data Collection and Processing
 
 ### Local Processing
-- Voice Browser operates entirely within your browser
+- Mirza Browser operates entirely within your browser
 - Login credentials and cookies never leave your browser
 - All user data is processed locally by default
 

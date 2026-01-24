@@ -352,7 +352,7 @@ export function createChatModel(providerConfig: ProviderConfig, modelConfig: Mod
       return createOpenAIChatModel(providerConfig, modelConfig, {
         headers: {
           'HTTP-Referer': 'https://github.com/Mirxa01/voice-browser',
-          'X-Title': 'Voice Browser',
+          'X-Title': 'Mirza Browser',
         },
       });
     }

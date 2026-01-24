@@ -11,24 +11,24 @@
 
 </div>
 
-## 🌐 Voice Browser
+## 🌐 Mirza Browser
 
-Voice Browser, tarayıcınızda çalışan açık kaynaklı bir yapay zeka tarayıcı otomasyon aracıdır. Esnek LLM seçenekleri ve çoklu ajan sistemiyle birlikte OpenAI Operator’a ücretsiz bir alternatiftir.
+Mirza Browser, tarayıcınızda çalışan açık kaynaklı bir yapay zeka tarayıcı otomasyon aracıdır. Esnek LLM seçenekleri ve çoklu ajan sistemiyle birlikte OpenAI Operator’a ücretsiz bir alternatiftir.
 
-⬇️ [Voice Browser’ı Chrome Web Mağazası’ndan ücretsiz edinin](https://chromewebstore.google.com/detail/voice-browser/imbddededgmcgfhfpcjmijokokekbkal)
+⬇️ [Mirza Browser’ı Chrome Web Mağazası’ndan ücretsiz edinin](https://chromewebstore.google.com/detail/voice-browser/imbddededgmcgfhfpcjmijokokekbkal)
 
 👏 Topluluğa katılın: [Discord](https://discord.gg/NN3ABHggMK) | [X](https://x.com/voice-browser_ai)
 
-❤️ Voice Browser’ı sevdiniz mi? Bize bir yıldız ⭐ verin ve yayılmasına yardımcı olun!
+❤️ Mirza Browser’ı sevdiniz mi? Bize bir yıldız ⭐ verin ve yayılmasına yardımcı olun!
 
 <div align="center">
-<img src="https://github.com/user-attachments/assets/112c4385-7b03-4b81-a352-4f348093351b" width="600" alt="Voice Browser Demo GIF" />
-<p><em>Voice Browser’ın çoklu ajan sistemi, HuggingFace'i gerçek zamanlı analiz ederken; Planner engellerle karşılaştığında akıllıca kendi kendini düzeltir ve Navigator’a yaklaşımını dinamik olarak ayarlamasını söyler—tüm bunlar yerel olarak tarayıcınızda gerçekleşir.</em></p>
+<img src="https://github.com/user-attachments/assets/112c4385-7b03-4b81-a352-4f348093351b" width="600" alt="Mirza Browser Demo GIF" />
+<p><em>Mirza Browser’ın çoklu ajan sistemi, HuggingFace'i gerçek zamanlı analiz ederken; Planner engellerle karşılaştığında akıllıca kendi kendini düzeltir ve Navigator’a yaklaşımını dinamik olarak ayarlamasını söyler—tüm bunlar yerel olarak tarayıcınızda gerçekleşir.</em></p>
 </div>
 
-## 🔥Neden Voice Browser?
+## 🔥Neden Mirza Browser?
 
-OpenAI Operator'ın aylık 200 dolarlık ücretinden kurtulmak mı istiyorsunuz? **Voice Browser**, bir Chrome uzantısı olarak size premium tarayıcı otomasyonu yetenekleri sunar ve tam kontrolü elinizde tutmanızı sağlar:
+OpenAI Operator'ın aylık 200 dolarlık ücretinden kurtulmak mı istiyorsunuz? **Mirza Browser**, bir Chrome uzantısı olarak size premium tarayıcı otomasyonu yetenekleri sunar ve tam kontrolü elinizde tutmanızı sağlar:
 
 - **%100 Ücretsiz** - Abonelik ücreti veya gizli maliyetler yok. Sadece yükleyin ve kendi API anahtarlarınızı kullanın, ne kadar kullanırsanız o kadar ödersiniz.
 - **Gizlilik Odaklı** - Her şey yerel tarayıcınızda çalışır. Kimlik bilgileriniz yalnızca sizde kalır, bulut hizmetleriyle paylaşılmaz.
@@ -55,19 +55,19 @@ OpenAI Operator'ın aylık 200 dolarlık ücretinden kurtulmak mı istiyorsunuz?
 **Desteklenmeyenler:**
 - Firefox, Safari ve diğer Chromium türevleri (Opera, Arc vb.)
 
-> **Not**: Voice Browser diğer Chromium tabanlı tarayıcılarda çalışabilir, ancak en iyi deneyim ve garantili uyumluluk için Chrome veya Edge öneriyoruz.
+> **Not**: Mirza Browser diğer Chromium tabanlı tarayıcılarda çalışabilir, ancak en iyi deneyim ve garantili uyumluluk için Chrome veya Edge öneriyoruz.
 
 ## 🚀 Hızlı Başlangıç
 
 1. **Chrome Web Mağazası’ndan Kurulum** (Kararlı Sürüm):
-   * [Voice Browser Chrome Web Mağazası sayfasına](https://chromewebstore.google.com/detail/voice-browser/imbddededgmcgfhfpcjmijokokekbkal) gidin
+   * [Mirza Browser Chrome Web Mağazası sayfasına](https://chromewebstore.google.com/detail/voice-browser/imbddededgmcgfhfpcjmijokokekbkal) gidin
    * "Chrome’a Ekle" butonuna tıklayın
    * Kurulumu onaylayın
 
 > **Önemli Not**: En yeni özellikler için aşağıdaki ["En Son Sürümü Manuel Kur"](#-en-son-sürümü-manuel-kur) kısmından kurulum yapmanızı öneririz. Chrome Web Mağazası versiyonu inceleme süreci nedeniyle gecikebilir.
 
 2. **Ajan Modellerini Yapılandırın**:
-   * Araç çubuğundaki Voice Browser simgesine tıklayın
+   * Araç çubuğundaki Mirza Browser simgesine tıklayın
    * Sağ üstteki `Ayarlar` simgesine tıklayın
    * LLM API anahtarlarınızı ekleyin
    * Farklı ajanlar (Navigator, Planner) için hangi modelin kullanılacağını seçin
@@ -87,19 +87,19 @@ En yeni özellikleri içeren en güncel sürümü kurmak için:
     * Çıkardığınız `voice-browser` klasörünü seçin
 
 3. **Ajan Modellerini Yapılandırın**
-    * Voice Browser simgesine tıklayarak yan paneli açın
+    * Mirza Browser simgesine tıklayarak yan paneli açın
     * Sağ üstteki `Ayarlar` simgesine tıklayın
     * API anahtarlarınızı ekleyin
     * Ajanlara model atayın (Navigator, Planner)
 
 4. **Güncelleme**:
     * Yeni `voice-browser.zip` dosyasını indirin
-    * Mevcut Voice Browser dosyalarını yenileriyle değiştirin
-    * `chrome://extensions/` sayfasına gidip Voice Browser kartındaki yenile simgesine tıklayın
+    * Mevcut Mirza Browser dosyalarını yenileriyle değiştirin
+    * `chrome://extensions/` sayfasına gidip Mirza Browser kartındaki yenile simgesine tıklayın
 
 ## 🛠️ Kaynaktan Derleme
 
-Voice Browser’ı kendiniz derlemek isterseniz şu adımları izleyin:
+Mirza Browser’ı kendiniz derlemek isterseniz şu adımları izleyin:
 
 1. **Gereksinimler**:
    * [Node.js](https://nodejs.org/) (v22.12.0 veya üstü)
@@ -136,7 +136,7 @@ Voice Browser’ı kendiniz derlemek isterseniz şu adımları izleyin:
 
 ## 🤖 Model Seçimi
 
-Voice Browser, her ajan için farklı LLM modelleri ayarlamanıza olanak tanır. Böylece performans ve maliyet arasında denge kurabilirsiniz. İşte önerilen yapılandırmalar:
+Mirza Browser, her ajan için farklı LLM modelleri ayarlamanıza olanak tanır. Böylece performans ve maliyet arasında denge kurabilirsiniz. İşte önerilen yapılandırmalar:
 
 ### Daha Yüksek Performans
 
@@ -204,21 +204,21 @@ Sadece bir cümleyle gerçekleştirebileceğiniz güçlü görevlerden bazılar�
 
 ## 🛠️ Yol Haritası
 
-Voice Browser için heyecan verici yeni özellikler geliştiriyoruz, katılmak ister misiniz?
+Mirza Browser için heyecan verici yeni özellikler geliştiriyoruz, katılmak ister misiniz?
 
 Detaylı yol haritamıza ve gelecek özelliklere [GitHub Discussions](https://github.com/voice-browser/voice-browser/discussions/85) üzerinden göz atabilirsiniz.
 
 ## 🤝 Katkıda Bulunun
 
-**Voice Browser’ı daha iyi hale getirmemize yardım edin!** Her türden katkıya açığız:
+**Mirza Browser’ı daha iyi hale getirmemize yardım edin!** Her türden katkıya açığız:
 
 * **Prompt & Kullanım Senaryoları Paylaşın**
 
   * [Discord sunucumuza](https://discord.gg/NN3ABHggMK) katılın
-  * Voice Browser’ı nasıl kullandığınızı anlatın ve topluluk kütüphanemizi büyütün
+  * Mirza Browser’ı nasıl kullandığınızı anlatın ve topluluk kütüphanemizi büyütün
 * **Geri Bildirim Verin**
 
-  * Voice Browser’ı deneyin ve performansı hakkında önerilerinizi paylaşın
+  * Mirza Browser’ı deneyin ve performansı hakkında önerilerinizi paylaşın
 * **Kod Katkısı Yapın**
 
   * Kod katkısı için yönergeleri [CONTRIBUTING.md](CONTRIBUTING.md) dosyasında bulabilirsiniz
@@ -232,7 +232,7 @@ Bir güvenlik açığı keşfederseniz, lütfen bunu açık şekilde **issue, pu
 
 Bunun yerine, [GitHub Güvenlik Danışma Sayfası](https://github.com/voice-browser/voice-browser/security/advisories/new) üzerinden özel olarak bildirin. Böylece açığı kamuya açıklanmadan önce düzeltme şansı buluruz.
 
-Voice Browser’ı ve kullanıcılarını güvende tutmaya yardım ettiğiniz için teşekkür ederiz!
+Mirza Browser’ı ve kullanıcılarını güvende tutmaya yardım ettiğiniz için teşekkür ederiz!
 
 ## 💬 Topluluk
 
@@ -244,7 +244,7 @@ Giderek büyüyen geliştirici ve kullanıcı topluluğumuza katılın:
 
 ## 👏 Teşekkürler
 
-Voice Browser, şu harika açık kaynak projeler üzerine inşa edilmiştir:
+Mirza Browser, şu harika açık kaynak projeler üzerine inşa edilmiştir:
 
 * [Browser Use](https://github.com/browser-use/browser-use)
 * [Puppeteer](https://github.com/EmergenceAI/Agent-E)
@@ -257,9 +257,9 @@ Tüm yaratıcılarına ve katkıda bulunanlara büyük teşekkürler!
 
 Bu proje Apache License 2.0 ile lisanslanmıştır – detaylar için [LICENSE](LICENSE) dosyasına bakın.
 
-Sevgiyle yapıldı ❤️ Voice Browser Ekibi tarafından.
+Sevgiyle yapıldı ❤️ Mirza Browser Ekibi tarafından.
 
-Voice Browser’ı sevdiniz mi? Bize bir yıldız 🌟 verin ve topluluğumuza katılın: [Discord](https://discord.gg/NN3ABHggMK) | [X](https://x.com/voice-browser_ai)
+Mirza Browser’ı sevdiniz mi? Bize bir yıldız 🌟 verin ve topluluğumuza katılın: [Discord](https://discord.gg/NN3ABHggMK) | [X](https://x.com/voice-browser_ai)
 
 ---
 

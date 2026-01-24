@@ -1,5 +1,5 @@
 name: Bug Report
-description: Create a report to help us improve Voice Browser
+description: Create a report to help us improve Mirza Browser
 title: "[Bug]: "
 labels: ["bug", "needs-triage"]
 body:
@@ -11,8 +11,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: Voice Browser Version
-      description: What version of Voice Browser are you running?
+      label: Mirza Browser Version
+      description: What version of Mirza Browser are you running?
       placeholder: e.g., 0.1.0
     validations:
       required: true

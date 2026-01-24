@@ -4,7 +4,7 @@ This file provides guidance to AI coding assistants (e.g., Claude Code, GitHub C
 
 ## Project Overview
 
-Voice Browser is an open-source voice-controlled AI web automation Chrome extension that runs multi-agent systems locally in the browser. It supports live voice input, voice feedback, and multiple LLM providers (OpenAI, Anthropic, Gemini, Ollama, etc.).
+Mirza Browser is an open-source voice-controlled AI web automation Chrome extension that runs multi-agent systems locally in the browser. It supports live voice input, voice feedback, and multiple LLM providers (OpenAI, Anthropic, Gemini, Ollama, etc.).
 
 ## Development Commands
 

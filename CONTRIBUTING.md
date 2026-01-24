@@ -1,6 +1,6 @@
-# Contributing to Voice Browser
+# Contributing to Mirza Browser
 
-We deeply appreciate your interest in contributing to Voice Browser! Every contribution helps make Voice Browser more powerful and accessible for everyone.
+We deeply appreciate your interest in contributing to Mirza Browser! Every contribution helps make Mirza Browser more powerful and accessible for everyone.
 
 ## Quick Start
 

@@ -1,11 +1,11 @@
 {
   "app_metadata_description": {
     "description": "Extension description",
-    "message": "Voice-controlled AI web automation! Voice Browser lets you control your browser with voice commands, extract data, fill forms, and get voice feedback."
+    "message": "Voice-controlled AI web automation! Mirza Browser lets you control your browser with voice commands, extract data, fill forms, and get voice feedback."
   },
   "app_metadata_name": {
     "description": "Extension name",
-    "message": "Voice Browser: AI Web Agent & Voice Automation"
+    "message": "Mirza Browser: AI Web Agent & Voice Automation"
   },
   "errors_unknown": {
     "message": "Unknown error occurred"
@@ -38,7 +38,7 @@
     "message": "Back to chat"
   },
   "welcome_title": {
-    "message": "Welcome to Voice Browser!"
+    "message": "Welcome to Mirza Browser!"
   },
   "welcome_instruction": {
     "message": "To get started, please configure your API keys in the settings page."
@@ -167,7 +167,7 @@
     "message": "Enable Voice Input"
   },
   "permissions_microphone_description": {
-    "message": "Voice Browser needs microphone access to convert your speech to text."
+    "message": "Mirza Browser needs microphone access to convert your speech to text."
   },
   "permissions_microphone_grantButton": {
     "message": "Grant Microphone Permission"

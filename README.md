@@ -9,9 +9,9 @@
 
 </div>
 
-## 🎤 Voice Browser
+## 🎤 Mirza Browser
 
-Voice Browser is an open-source voice-controlled AI web automation tool that runs in your browser. Control your browser with voice commands, get voice feedback, and automate web tasks hands-free!
+Mirza Browser is an open-source voice-controlled AI web automation tool that runs in your browser. Control your browser with voice commands, get voice feedback, and automate web tasks hands-free!
 
 ### ✨ New Voice Features
 
@@ -21,9 +21,9 @@ Voice Browser is an open-source voice-controlled AI web automation tool that run
 - **Memory & Learning**: The AI learns from successful tasks to improve over time
 - **Multi-LLM Support**: Connect to OpenAI, Anthropic, Gemini, Ollama, and more
 
-## 🔥 Why Voice Browser?
+## 🔥 Why Mirza Browser?
 
-Looking for a powerful AI browser agent with voice control? **Voice Browser** delivers premium web automation capabilities while keeping you in complete control:
+Looking for a powerful AI browser agent with voice control? **Mirza Browser** delivers premium web automation capabilities while keeping you in complete control:
 
 - **100% Free** - No subscription fees or hidden costs. Just install and use your own API keys.
 - **Voice-First** - Control everything with your voice, get spoken feedback.
@@ -57,7 +57,7 @@ Looking for a powerful AI browser agent with voice control? **Voice Browser** de
 **Not Supported:**
 - Firefox, Safari, and other Chromium variants (Opera, Arc, etc.)
 
-> **Note**: While Voice Browser may function on other Chromium-based browsers, we recommend using Chrome or Edge for the best experience and guaranteed compatibility.
+> **Note**: While Mirza Browser may function on other Chromium-based browsers, we recommend using Chrome or Edge for the best experience and guaranteed compatibility.
 
 
 ## 🚀 Quick Start
@@ -73,7 +73,7 @@ Looking for a powerful AI browser agent with voice control? **Voice Browser** de
    * Select the **`dist`** folder (NOT the `chrome-extension` source folder!)
 
 3. **Configure Settings**:
-   * Click the Voice Browser icon in your toolbar to open the sidebar
+   * Click the Mirza Browser icon in your toolbar to open the sidebar
    * Click the `Settings` icon (top right)
    * Add your LLM API keys
    * Configure voice settings (enable TTS, select voice)
@@ -95,21 +95,21 @@ To get the most recent version with all the latest features:
     * Select the unzipped `voice-browser` folder.
 
 3. **Configure Agent Models**
-    * Click the Voice Browser icon in your toolbar to open the sidebar
+    * Click the Mirza Browser icon in your toolbar to open the sidebar
     * Click the `Settings` icon (top right).
     * Add your LLM API keys.
     * Choose which model to use for different agents (Navigator, Planner)
 
 4. **Upgrading**:
     * Download the latest `voice-browser.zip` file from the release page.
-    * Unzip and replace your existing Voice Browser files with the new ones.
-    * Go to `chrome://extensions/` in Chrome and click the refresh icon on the Voice Browser card.
+    * Unzip and replace your existing Mirza Browser files with the new ones.
+    * Go to `chrome://extensions/` in Chrome and click the refresh icon on the Mirza Browser card.
 
 ## 🛠️ Build from Source
 
 > **⚠️ You MUST build the extension before loading it into Chrome!** The `chrome-extension` directory contains source code and cannot be loaded directly.
 
-If you prefer to build Voice Browser yourself, follow these steps:
+If you prefer to build Mirza Browser yourself, follow these steps:
 
 1. **Prerequisites**:
    * [Node.js](https://nodejs.org/) (v22.12.0 or higher)
@@ -147,7 +147,7 @@ If you prefer to build Voice Browser yourself, follow these steps:
 
 ## 🤖 Choosing Your Models
 
-Voice Browser allows you to configure different LLM models for each agent to balance performance and cost. Here are recommended configurations:
+Mirza Browser allows you to configure different LLM models for each agent to balance performance and cost. Here are recommended configurations:
 
 ### Better Performance
 - **Planner**: Claude Sonnet 4
@@ -202,19 +202,19 @@ Here are some powerful tasks you can accomplish with just a sentence:
 
 ## 🛠️ Roadmap
 
-We're actively developing Voice Browser with exciting features on the horizon, welcome to join us! 
+We're actively developing Mirza Browser with exciting features on the horizon, welcome to join us! 
 
 Check out our detailed roadmap and upcoming features in our [GitHub Discussions](https://github.com/Mirxa01/voice-browser/discussions). 
 
 ## 🤝 Contributing
 
-**We need your help to make Voice Browser even better!**  Contributions of all kinds are welcome:
+**We need your help to make Mirza Browser even better!**  Contributions of all kinds are welcome:
 
 *  **Share Prompts & Use Cases** 
    * Join our [Discord server](https://discord.gg/NN3ABHggMK).
-   * share how you're using Voice Browser.  Help us build a library of useful prompts and real-world use cases.
+   * share how you're using Mirza Browser.  Help us build a library of useful prompts and real-world use cases.
 *  **Provide Feedback** 
-   * Try Voice Browser and give us feedback on its performance or suggest improvements in our [Discord server](https://discord.gg/NN3ABHggMK).
+   * Try Mirza Browser and give us feedback on its performance or suggest improvements in our [Discord server](https://discord.gg/NN3ABHggMK).
 * **Contribute Code**
    * Check out our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute code to the project.
    * Submit pull requests for bug fixes, features, or documentation improvements.
@@ -229,7 +229,7 @@ If you discover a security vulnerability, please **DO NOT** disclose it publicly
 
 Instead, please create a [GitHub Security Advisory](https://github.com/Mirxa01/voice-browser/security/advisories/new) to report the vulnerability responsibly. This allows us to address the issue before it's publicly disclosed.
 
-We appreciate your help in keeping Voice Browser and its users safe!
+We appreciate your help in keeping Mirza Browser and its users safe!
 
 ## 💬 Community
 
@@ -241,7 +241,7 @@ Join our growing community of developers and users:
 
 ## 👏 Acknowledgments
 
-Voice Browser builds on top of other awesome open-source projects:
+Mirza Browser builds on top of other awesome open-source projects:
 
 - [Browser Use](https://github.com/browser-use/browser-use)
 - [Puppeteer](https://github.com/EmergenceAI/Agent-E)
@@ -254,15 +254,15 @@ Huge thanks to their creators and contributors!
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
-Made with ❤️ by the Voice Browser Team. 
+Made with ❤️ by the Mirza Browser Team. 
 
-Like Voice Browser? Give us a star 🌟 and join us in [Discord](https://discord.gg/NN3ABHggMK) | [X](https://x.com/Mirxa01)
+Like Mirza Browser? Give us a star 🌟 and join us in [Discord](https://discord.gg/NN3ABHggMK) | [X](https://x.com/Mirxa01)
 
 ## ⚠️ DISCLAIMER ON DERIVATIVE PROJECTS
 
 **We explicitly *DO NOT* endorse, support, or participate in any** projects involving cryptocurrencies, tokens, NFTs, or other blockchain-related applications **based on this codebase.**
 
-**Any such derivative projects are NOT Affiliated with, or maintained by, or in any way connected to the official Voice Browser project or its core team.**
+**Any such derivative projects are NOT Affiliated with, or maintained by, or in any way connected to the official Mirza Browser project or its core team.**
 
 **We assume NO LIABILITY for any losses, damages, or issues arising from the use of third-party derivative projects. Users interact with these projects at their own risk.**
 

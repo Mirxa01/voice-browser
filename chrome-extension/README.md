@@ -1,6 +1,6 @@
 # ⚠️ Important: Do Not Load This Directory Directly
 
-This is the **source code** directory for the Voice Browser extension. Chrome cannot load this directory directly because it contains TypeScript source files and a `manifest.js` file instead of a `manifest.json` file.
+This is the **source code** directory for the Mirza Browser extension. Chrome cannot load this directory directly because it contains TypeScript source files and a `manifest.js` file instead of a `manifest.json` file.
 
 ## How to Load the Extension
 

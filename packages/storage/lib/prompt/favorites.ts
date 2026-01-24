@@ -16,7 +16,7 @@ const defaultFavoritePrompts = [
   {
     title: '🌟 Star us on GitHub!',
     content:
-      "Open the Voice Browser repository at https://github.com/Mirxa01/voice-browser and check if you've already starred it. If not, please support us by giving us a star!",
+      "Open the Mirza Browser repository at https://github.com/Mirxa01/voice-browser and check if you've already starred it. If not, please support us by giving us a star!",
   },
 ];
 
