@@ -1,6 +1,6 @@
-# Contributing to NanoBrowser
+# Contributing to Mirza Browser
 
-We deeply appreciate your interest in contributing to NanoBrowser! Every contribution helps make Nanobrowser more powerful and accessible for everyone.
+We deeply appreciate your interest in contributing to Mirza Browser! Every contribution helps make Mirza Browser more powerful and accessible for everyone.
 
 ## Quick Start
 
