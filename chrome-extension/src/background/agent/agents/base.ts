@@ -55,8 +55,8 @@ export abstract class BaseAgent<T extends z.ZodType, M = unknown> {
     this.prompt = options.prompt;
     this.context = options.context;
     this.provider = options.provider || '';
-    // TODO: fix this, the name is not correct in production environment
-    this.chatModelLibrary = this.chatLLM.constructor.name;
+    // Map provider type to chat model library name (works in production)
+    this.chatModelLibrary = this.getChatModelLibraryName();
     this.modelName = this.getModelName();
     this.withStructuredOutput = this.setWithStructuredOutput();
     // extra options
@@ -64,6 +64,52 @@ export abstract class BaseAgent<T extends z.ZodType, M = unknown> {
     this.toolCallingMethod = this.setToolCallingMethod(extraOptions?.toolCallingMethod);
     this.callOptions = extraOptions?.callOptions;
     this.modelOutputToolName = `${this.id}_output`;
+  }
+
+  /**
+   * Map provider type to the expected chat model library name
+   * This method provides reliable model library detection even in production
+   * when constructor.name is mangled by minification
+   */
+  private getChatModelLibraryName(): string {
+    // First, try using provider type if available
+    if (this.provider) {
+      // Handle Azure OpenAI with custom IDs (e.g., azure_openai_2)
+      if (this.provider.startsWith('azure_openai')) {
+        return 'AzureChatOpenAI';
+      }
+
+      switch (this.provider) {
+        case ProviderTypeEnum.OpenAI:
+        case ProviderTypeEnum.CustomOpenAI:
+        case ProviderTypeEnum.OpenRouter:
+        case ProviderTypeEnum.Llama:
+          return 'ChatOpenAI';
+        case ProviderTypeEnum.AzureOpenAI:
+          return 'AzureChatOpenAI';
+        case ProviderTypeEnum.Anthropic:
+          return 'ChatAnthropic';
+        case ProviderTypeEnum.Gemini:
+          return 'ChatGoogleGenerativeAI';
+        case ProviderTypeEnum.Grok:
+          return 'ChatXAI';
+        case ProviderTypeEnum.Groq:
+          return 'ChatGroq';
+        case ProviderTypeEnum.Cerebras:
+          return 'ChatCerebras';
+        case ProviderTypeEnum.DeepSeek:
+          return 'ChatDeepSeek';
+        case ProviderTypeEnum.Ollama:
+          return 'ChatOllama';
+      }
+    }
+
+    // Fallback to constructor.name (works in development but may fail in production)
+    const constructorName = this.chatLLM.constructor.name;
+    logger.debug(
+      `[BaseAgent] Could not map provider type "${this.provider}", falling back to constructor.name: ${constructorName}`,
+    );
+    return constructorName;
   }
 
   // Set the model name
