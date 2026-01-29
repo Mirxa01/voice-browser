@@ -6,7 +6,12 @@
 //  - remove save_pdf action, it's not supported yet
 //  - remove Position, not needed
 //  - remove NoParamsAction, not needed
-// TODO: don't know why zod can not generate the same schema, need to fix it
+//
+// NOTE: This schema is maintained manually rather than generated from Zod for the following reasons:
+// 1. It originated from the browser-use project and needs to maintain compatibility
+// 2. Zod's schema generation doesn't produce the exact same structure with anyOf/null patterns
+// 3. LLM providers work better with this specific JSON Schema format
+// 4. The manual schema gives us fine-grained control over the structure
 export const jsonNavigatorOutputSchema = {
   $defs: {
     ActionModel: {

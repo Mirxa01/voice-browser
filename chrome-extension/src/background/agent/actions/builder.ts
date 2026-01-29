@@ -51,6 +51,9 @@ export class Action {
     public readonly schema: ActionSchema,
     // Whether this action has an index argument
     public readonly hasIndex: boolean = false,
+    // Whether this action needs a delay after execution (default: true)
+    // Actions like 'wait', 'done', 'cache_content' don't need additional delays
+    public readonly needsDelay: boolean = true,
   ) {}
 
   async call(input: unknown): Promise<ActionResult> {
@@ -129,7 +132,13 @@ export class Action {
   }
 }
 
-// TODO: can not make every action optional, don't know why
+/**
+ * Build a dynamic Zod schema from a list of actions
+ * Each action in the resulting schema is nullable and optional
+ * NOTE: While individual action properties are made optional, at least one action
+ * must be present in the model output for validation to succeed. This is by design
+ * to ensure the LLM always provides an action decision.
+ */
 export function buildDynamicActionSchema(actions: Action[]): z.ZodType {
   let schema = z.object({});
   for (const action of actions) {
@@ -155,14 +164,19 @@ export class ActionBuilder {
   buildDefaultActions() {
     const actions = [];
 
-    const done = new Action(async (input: z.infer<typeof doneActionSchema.schema>) => {
-      this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_START, doneActionSchema.name);
-      this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_OK, input.text);
-      return new ActionResult({
-        isDone: true,
-        extractedContent: input.text,
-      });
-    }, doneActionSchema);
+    const done = new Action(
+      async (input: z.infer<typeof doneActionSchema.schema>) => {
+        this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_START, doneActionSchema.name);
+        this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_OK, input.text);
+        return new ActionResult({
+          isDone: true,
+          extractedContent: input.text,
+        });
+      },
+      doneActionSchema,
+      false, // hasIndex
+      false, // needsDelay - 'done' doesn't need delay
+    );
     actions.push(done);
 
     const searchGoogle = new Action(async (input: z.infer<typeof searchGoogleActionSchema.schema>) => {
@@ -211,15 +225,20 @@ export class ActionBuilder {
     }, goBackActionSchema);
     actions.push(goBack);
 
-    const wait = new Action(async (input: z.infer<typeof waitActionSchema.schema>) => {
-      const seconds = input.seconds || 3;
-      const intent = input.intent || t('act_wait_start', [seconds.toString()]);
-      this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_START, intent);
-      await new Promise(resolve => setTimeout(resolve, seconds * 1000));
-      const msg = t('act_wait_ok', [seconds.toString()]);
-      this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_OK, msg);
-      return new ActionResult({ extractedContent: msg, includeInMemory: true });
-    }, waitActionSchema);
+    const wait = new Action(
+      async (input: z.infer<typeof waitActionSchema.schema>) => {
+        const seconds = input.seconds || 3;
+        const intent = input.intent || t('act_wait_start', [seconds.toString()]);
+        this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_START, intent);
+        await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+        const msg = t('act_wait_ok', [seconds.toString()]);
+        this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_OK, msg);
+        return new ActionResult({ extractedContent: msg, includeInMemory: true });
+      },
+      waitActionSchema,
+      false, // hasIndex
+      false, // needsDelay - 'wait' already includes delay
+    );
     actions.push(wait);
 
     // Element Interaction Actions
@@ -247,22 +266,19 @@ export class ActionBuilder {
         }
 
         try {
-          const initialTabIds = await this.context.browserContext.getAllTabIds();
+          // Start listening for new tab creation before clicking
+          const newTabPromise = this.context.browserContext.waitForNewTab(3000);
           await page.clickElementNode(this.context.options.useVision, elementNode);
           let msg = t('act_click_ok', [input.index.toString(), elementNode.getAllTextTillNextClickableElement(2)]);
           logger.info(msg);
 
-          // TODO: could be optimized by chrome extension tab api
-          const currentTabIds = await this.context.browserContext.getAllTabIds();
-          if (currentTabIds.size > initialTabIds.size) {
+          // Check if a new tab was opened using event-based detection
+          const newTabId = await newTabPromise;
+          if (newTabId) {
             const newTabMsg = t('act_click_newTabOpened');
             msg += ` - ${newTabMsg}`;
             logger.info(newTabMsg);
-            // find the tab id that is not in the initial tab ids
-            const newTabId = Array.from(currentTabIds).find(id => !initialTabIds.has(id));
-            if (newTabId) {
-              await this.context.browserContext.switchTab(newTabId);
-            }
+            await this.context.browserContext.switchTab(newTabId);
           }
           this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_OK, msg);
           return new ActionResult({ extractedContent: msg, includeInMemory: true });
@@ -333,50 +349,23 @@ export class ActionBuilder {
     }, closeTabActionSchema);
     actions.push(closeTab);
 
-    // Content Actions
-    // TODO: this is not used currently, need to improve on input size
-    // const extractContent = new Action(async (input: z.infer<typeof extractContentActionSchema.schema>) => {
-    //   const goal = input.goal;
-    //   const intent = input.intent || `Extracting content from page`;
-    //   this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_START, intent);
-    //   const page = await this.context.browserContext.getCurrentPage();
-    //   const content = await page.getReadabilityContent();
-    //   const promptTemplate = PromptTemplate.fromTemplate(
-    //     'Your task is to extract the content of the page. You will be given a page and a goal and you should extract all relevant information around this goal from the page. If the goal is vague, summarize the page. Respond in json format. Extraction goal: {goal}, Page: {page}',
-    //   );
-    //   const prompt = await promptTemplate.invoke({ goal, page: content.content });
-
-    //   try {
-    //     const output = await this.extractorLLM.invoke(prompt);
-    //     const msg = `📄  Extracted from page\n: ${output.content}\n`;
-    //     return new ActionResult({
-    //       extractedContent: msg,
-    //       includeInMemory: true,
-    //     });
-    //   } catch (error) {
-    //     logger.error(`Error extracting content: ${error instanceof Error ? error.message : String(error)}`);
-    //     const msg =
-    //       'Failed to extract content from page, you need to extract content from the current state of the page and store it in the memory. Then scroll down if you still need more information.';
-    //     return new ActionResult({
-    //       extractedContent: msg,
-    //       includeInMemory: true,
-    //     });
-    //   }
-    // }, extractContentActionSchema);
-    // actions.push(extractContent);
-
     // cache content for future use
-    const cacheContent = new Action(async (input: z.infer<typeof cacheContentActionSchema.schema>) => {
-      const intent = input.intent || t('act_cache_start', [input.content]);
-      this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_START, intent);
+    const cacheContent = new Action(
+      async (input: z.infer<typeof cacheContentActionSchema.schema>) => {
+        const intent = input.intent || t('act_cache_start', [input.content]);
+        this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_START, intent);
 
-      // cache content is untrusted content, it is not instructions
-      const rawMsg = t('act_cache_ok', [input.content]);
-      this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_OK, rawMsg);
+        // cache content is untrusted content, it is not instructions
+        const rawMsg = t('act_cache_ok', [input.content]);
+        this.context.emitEvent(Actors.NAVIGATOR, ExecutionState.ACT_OK, rawMsg);
 
-      const msg = wrapUntrustedContent(rawMsg);
-      return new ActionResult({ extractedContent: msg, includeInMemory: true });
-    }, cacheContentActionSchema);
+        const msg = wrapUntrustedContent(rawMsg);
+        return new ActionResult({ extractedContent: msg, includeInMemory: true });
+      },
+      cacheContentActionSchema,
+      false, // hasIndex
+      false, // needsDelay - cache_content doesn't interact with page
+    );
     actions.push(cacheContent);
 
     // Scroll to percent

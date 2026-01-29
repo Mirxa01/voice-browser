@@ -137,6 +137,36 @@ export default class BrowserContext {
   }
 
   /**
+   * Wait for a new tab to be created and return its ID.
+   * This uses Chrome's tab events instead of polling, making it more efficient.
+   * @param timeoutMs - Maximum time to wait for a new tab in milliseconds (default: 5000)
+   * @returns The ID of the newly created tab, or undefined if no tab was created within timeout
+   */
+  public async waitForNewTab(timeoutMs: number = 5000): Promise<number | undefined> {
+    return new Promise<number | undefined>(resolve => {
+      let resolved = false;
+      const timeoutId = setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          chrome.tabs.onCreated.removeListener(onCreatedHandler);
+          resolve(undefined); // No new tab created within timeout
+        }
+      }, timeoutMs);
+
+      const onCreatedHandler = (tab: chrome.tabs.Tab) => {
+        if (!resolved && tab.id !== undefined) {
+          resolved = true;
+          clearTimeout(timeoutId);
+          chrome.tabs.onCreated.removeListener(onCreatedHandler);
+          resolve(tab.id);
+        }
+      };
+
+      chrome.tabs.onCreated.addListener(onCreatedHandler);
+    });
+  }
+
+  /**
    * Wait for tab events to occur after a tab is created or updated.
    * @param tabId - The ID of the tab to wait for events on.
    * @param options - An object containing options for the wait.
