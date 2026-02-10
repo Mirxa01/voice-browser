@@ -968,13 +968,13 @@
     }
   },
   "act_autoFill_start": {
-    "message": "Auto-filling form with profile data"
+    "message": "Preenchendo formulário automaticamente com dados do perfil"
   },
   "act_autoFill_noData": {
-    "message": "No profile data available to fill the form. Please configure your profile in settings."
+    "message": "Nenhum dado de perfil disponível para preencher o formulário. Configure seu perfil nas configurações."
   },
   "act_autoFill_ok": {
-    "message": "Successfully filled $COUNT$ form fields",
+    "message": "$COUNT$ campos do formulário preenchidos com sucesso",
     "placeholders": {
       "count": {
         "content": "$1",
@@ -983,19 +983,19 @@
     }
   },
   "act_autoFill_failed": {
-    "message": "Failed to auto-fill form: $ERROR$",
+    "message": "Falha ao preencher formulário automaticamente: $ERROR$",
     "placeholders": {
       "error": {
         "content": "$1",
-        "example": "Connection error"
+        "example": "Erro de conexão"
       }
     }
   },
   "act_useCredential_start": {
-    "message": "Using stored credentials for login"
+    "message": "Usando credenciais salvas para login"
   },
   "act_useCredential_noCredential": {
-    "message": "No saved credentials found for $SITE$. Please add credentials in the Profile settings.",
+    "message": "Nenhuma credencial salva encontrada para $SITE$. Adicione credenciais nas configurações do perfil.",
     "placeholders": {
       "site": {
         "content": "$1",
@@ -1004,7 +1004,7 @@
     }
   },
   "act_useCredential_ok": {
-    "message": "Successfully filled login credentials for $SITE$",
+    "message": "Credenciais de login preenchidas com sucesso para $SITE$",
     "placeholders": {
       "site": {
         "content": "$1",
@@ -1013,11 +1013,11 @@
     }
   },
   "act_useCredential_failed": {
-    "message": "Failed to use credentials: $ERROR$",
+    "message": "Falha ao usar credenciais: $ERROR$",
     "placeholders": {
       "error": {
         "content": "$1",
-        "example": "Connection error"
+        "example": "Erro de conexão"
       }
     }
   }
