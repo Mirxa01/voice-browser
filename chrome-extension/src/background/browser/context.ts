@@ -54,11 +54,19 @@ export default class BrowserContext {
   }
 
   public async cleanup(): Promise<void> {
-    const currentPage = await this.getCurrentPage();
-    currentPage?.removeHighlight();
+    try {
+      const currentPage = await this.getCurrentPage();
+      currentPage?.removeHighlight();
+    } catch (error) {
+      logger.info('Could not get current page during cleanup:', error);
+    }
     // detach all pages
     for (const page of this._attachedPages.values()) {
-      await page.detachPuppeteer();
+      try {
+        await page.detachPuppeteer();
+      } catch (error) {
+        logger.info('Failed to detach page during cleanup:', error);
+      }
     }
     this._attachedPages.clear();
     this._currentTabId = null;
@@ -183,6 +191,7 @@ export default class BrowserContext {
     const { waitForUpdate = true, waitForActivation = true, timeoutMs = 5000 } = options;
 
     const promises: Promise<void>[] = [];
+    const cleanupFns: (() => void)[] = [];
 
     if (waitForUpdate) {
       const updatePromise = new Promise<void>(resolve => {
@@ -204,6 +213,7 @@ export default class BrowserContext {
           }
         };
         chrome.tabs.onUpdated.addListener(onUpdatedHandler);
+        cleanupFns.push(() => chrome.tabs.onUpdated.removeListener(onUpdatedHandler));
 
         // Check current state
         chrome.tabs.get(tabId).then(tab => {
@@ -229,6 +239,7 @@ export default class BrowserContext {
           }
         };
         chrome.tabs.onActivated.addListener(onActivatedHandler);
+        cleanupFns.push(() => chrome.tabs.onActivated.removeListener(onActivatedHandler));
 
         // Check current state
         chrome.tabs.get(tabId).then(tab => {
@@ -242,7 +253,13 @@ export default class BrowserContext {
     }
 
     const timeoutPromise = new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error(`Tab operation timed out after ${timeoutMs} ms`)), timeoutMs),
+      setTimeout(() => {
+        // Clean up all listeners on timeout to prevent leaks
+        for (const cleanup of cleanupFns) {
+          cleanup();
+        }
+        reject(new Error(`Tab operation timed out after ${timeoutMs} ms`));
+      }, timeoutMs),
     );
 
     await Promise.race([Promise.all(promises), timeoutPromise]);
