@@ -13,14 +13,17 @@ const maxTokens = 1024 * 4;
 
 // Custom ChatLlama class to handle Llama API response format
 class ChatLlama extends ChatOpenAI {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(args: any) {
     super(args);
   }
 
   // Override the completionWithRetry method to intercept and transform the response
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async completionWithRetry(request: any, options?: any): Promise<any> {
     try {
       // Make the request using the parent's implementation
+      // @ts-expect-error - accessing internal LangChain method
       const response = await super.completionWithRetry(request, options);
 
       // Check if this is a Llama API response format

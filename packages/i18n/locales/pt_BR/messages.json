@@ -966,5 +966,59 @@
         "example": "Opção não encontrada"
       }
     }
+  },
+  "act_autoFill_start": {
+    "message": "Auto-filling form with profile data"
+  },
+  "act_autoFill_noData": {
+    "message": "No profile data available to fill the form. Please configure your profile in settings."
+  },
+  "act_autoFill_ok": {
+    "message": "Successfully filled $COUNT$ form fields",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "act_autoFill_failed": {
+    "message": "Failed to auto-fill form: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Connection error"
+      }
+    }
+  },
+  "act_useCredential_start": {
+    "message": "Using stored credentials for login"
+  },
+  "act_useCredential_noCredential": {
+    "message": "No saved credentials found for $SITE$. Please add credentials in the Profile settings.",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "act_useCredential_ok": {
+    "message": "Successfully filled login credentials for $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "act_useCredential_failed": {
+    "message": "Failed to use credentials: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Connection error"
+      }
+    }
   }
 }
