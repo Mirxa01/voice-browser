@@ -36,13 +36,16 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
 });
 
 // Listen for debugger detached event
-// if canceled_by_user, remove the tab from the browser context
+// Handle all detach reasons to ensure proper cleanup
 chrome.debugger.onDetach.addListener(async (source, reason) => {
-  console.log('Debugger detached:', source, reason);
-  if (reason === 'canceled_by_user') {
-    if (source.tabId) {
+  logger.info('Debugger detached:', source, reason);
+  if (source.tabId) {
+    if (reason === 'canceled_by_user') {
       currentExecutor?.cancel();
       await browserContext.cleanup();
+    } else {
+      // For other reasons (target_closed, etc.), just remove the page
+      browserContext.removeAttachedPage(source.tabId);
     }
   }
 });
@@ -343,9 +346,7 @@ async function subscribeToExecutorEvents(executor: Executor) {
   // Subscribe to new events
   executor.subscribeExecutionEvents(async event => {
     try {
-      if (currentPort) {
-        currentPort.postMessage(event);
-      }
+      currentPort?.postMessage(event);
     } catch (error) {
       logger.error('Failed to send message to side panel:', error);
     }

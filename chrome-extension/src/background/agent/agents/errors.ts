@@ -98,21 +98,15 @@ export class ChatModelBadRequestError extends Error {
 export function isAuthenticationError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
 
-  // Get the error message
   const errorMessage = error.message || '';
 
-  // Get error name - sometimes error.name just returns "Error" for custom errors
-  let errorName = error.name || '';
-
-  // Try to extract the constructor name, which often contains the actual error type
-  // This works better than error.name for many custom errors
-  const constructorName = error.constructor?.name;
-  if (constructorName && constructorName !== 'Error') {
-    errorName = constructorName;
+  // Check error.name which is explicitly set and survives minification
+  if (error.name === 'AuthenticationError') {
+    return true;
   }
 
-  // Check if the error name indicates an authentication error
-  if (errorName === 'AuthenticationError') {
+  // Check for HTTP status code property (set by many LLM SDKs)
+  if ('status' in error && (error as { status: number }).status === 401) {
     return true;
   }
 
@@ -132,7 +126,13 @@ export function isAuthenticationError(error: unknown): boolean {
  */
 export function isForbiddenError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
-  return error.message.includes(' 403') && error.message.includes('Forbidden');
+
+  // Check for HTTP status code property (set by many LLM SDKs)
+  if ('status' in error && (error as { status: number }).status === 403) {
+    return true;
+  }
+
+  return error.message.includes(' 403') || error.message.toLowerCase().includes('forbidden');
 }
 
 /**
@@ -144,21 +144,15 @@ export function isForbiddenError(error: unknown): boolean {
 export function isBadRequestError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
 
-  // Get the error message
   const errorMessage = error.message || '';
 
-  // Get error name - sometimes error.name just returns "Error" for custom errors
-  let errorName = error.name || '';
-
-  // Try to extract the constructor name, which often contains the actual error type
-  // This works better than error.name for many custom errors
-  const constructorName = error.constructor?.name;
-  if (constructorName && constructorName !== 'Error') {
-    errorName = constructorName;
+  // Check error.name which is explicitly set and survives minification
+  if (error.name === 'BadRequestError') {
+    return true;
   }
 
-  // Check if the error name indicates a bad request error
-  if (errorName === 'BadRequestError') {
+  // Check for HTTP status code property (set by many LLM SDKs)
+  if ('status' in error && (error as { status: number }).status === 400) {
     return true;
   }
 

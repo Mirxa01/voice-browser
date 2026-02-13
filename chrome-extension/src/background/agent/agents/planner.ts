@@ -25,9 +25,10 @@ export const plannerOutputSchema = z.object({
   done: z.union([
     z.boolean(),
     z.string().transform(val => {
-      if (val.toLowerCase() === 'true') return true;
-      if (val.toLowerCase() === 'false') return false;
-      throw new Error('Invalid boolean string');
+      const lower = val.toLowerCase().trim();
+      if (lower === 'true') return true;
+      if (lower === 'false') return false;
+      throw new Error(`Invalid boolean string: "${val}"`);
     }),
   ]),
   next_steps: z.string(),
@@ -36,9 +37,10 @@ export const plannerOutputSchema = z.object({
   web_task: z.union([
     z.boolean(),
     z.string().transform(val => {
-      if (val.toLowerCase() === 'true') return true;
-      if (val.toLowerCase() === 'false') return false;
-      throw new Error('Invalid boolean string');
+      const lower = val.toLowerCase().trim();
+      if (lower === 'true') return true;
+      if (lower === 'false') return false;
+      throw new Error(`Invalid boolean string: "${val}"`);
     }),
   ]),
 });

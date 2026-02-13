@@ -261,7 +261,7 @@ export class Executor {
       // Create a pattern from the successful execution
       const actionSequence = this.context.actionResults
         .filter(r => r.includeInMemory)
-        .map(r => `${r.action}: ${r.description || ''}`);
+        .map(r => r.extractedContent || '');
 
       await memoryStore.addPattern({
         taskType,

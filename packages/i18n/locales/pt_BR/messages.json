@@ -966,5 +966,59 @@
         "example": "Opção não encontrada"
       }
     }
+  },
+  "act_autoFill_start": {
+    "message": "Preenchendo formulário automaticamente com dados do perfil"
+  },
+  "act_autoFill_noData": {
+    "message": "Nenhum dado de perfil disponível para preencher o formulário. Configure seu perfil nas configurações."
+  },
+  "act_autoFill_ok": {
+    "message": "$COUNT$ campos do formulário preenchidos com sucesso",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "act_autoFill_failed": {
+    "message": "Falha ao preencher formulário automaticamente: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Erro de conexão"
+      }
+    }
+  },
+  "act_useCredential_start": {
+    "message": "Usando credenciais salvas para login"
+  },
+  "act_useCredential_noCredential": {
+    "message": "Nenhuma credencial salva encontrada para $SITE$. Adicione credenciais nas configurações do perfil.",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "act_useCredential_ok": {
+    "message": "Credenciais de login preenchidas com sucesso para $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "act_useCredential_failed": {
+    "message": "Falha ao usar credenciais: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Erro de conexão"
+      }
+    }
   }
 }

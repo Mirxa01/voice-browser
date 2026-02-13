@@ -729,7 +729,7 @@ export class ActionBuilder {
 
             const profileKey = fieldTypeToProfile[field.fieldType];
             const value = profileKey ? profile[profileKey] : undefined;
-            if (value) {
+            if (typeof value === 'string' && value) {
               await page.inputTextElementNode(this.context.options.useVision, elementNode, value);
               filledFields.push(`${field.fieldType}: ${value}`);
             }

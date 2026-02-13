@@ -2,7 +2,7 @@ import type { z } from 'zod';
 import type { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import type { AgentContext, AgentOutput } from '../types';
 import type { BasePrompt } from '../prompts/base';
-import type { BaseMessage } from '@langchain/core/messages';
+import { type BaseMessage, HumanMessage, AIMessage, SystemMessage } from '@langchain/core/messages';
 import { createLogger } from '@src/background/log';
 import type { Action } from '../actions/builder';
 import { convertInputMessages, extractJsonFromModelOutput, removeThinkTags } from '../messages/utils';
@@ -363,11 +363,13 @@ export abstract class BaseAgent<T extends z.ZodType, M = unknown> {
           .map(item => ('text' in item ? item.text : ''))
           .join('\n');
 
-        // Return a new message with text-only content
-        return new message.constructor({
-          ...message,
-          content: textContent,
-        }) as BaseMessage;
+        // Return a new message of the same type with text-only content
+        if (message instanceof SystemMessage) {
+          return new SystemMessage({ content: textContent });
+        } else if (message instanceof AIMessage) {
+          return new AIMessage({ content: textContent });
+        }
+        return new HumanMessage({ content: textContent });
       }
 
       // If content is not an array, return message as-is

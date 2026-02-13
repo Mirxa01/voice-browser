@@ -342,7 +342,7 @@ export class NavigatorAgent extends BaseAgent<z.ZodType, NavigatorResult> {
       }
     } else if (typeof response.action === 'string') {
       try {
-        logger.warning('Unexpected action format', response.action);
+        logger.warning('Unexpected action format (string), attempting parse', response.action);
         // First try to parse the action string directly
         actions = JSON.parse(response.action);
       } catch (parseError) {
@@ -351,9 +351,13 @@ export class NavigatorAgent extends BaseAgent<z.ZodType, NavigatorResult> {
           const fixedAction = repairJsonString(response.action);
           logger.info('Fixed action string', fixedAction);
           actions = JSON.parse(fixedAction);
-        } catch (error) {
-          logger.error('Invalid action format even after repair attempt', response.action);
-          throw new Error('Invalid action output format');
+        } catch (repairError) {
+          const repairMsg = repairError instanceof Error ? repairError.message : String(repairError);
+          logger.error('Invalid action format even after repair attempt', {
+            original: response.action,
+            repairError: repairMsg,
+          });
+          throw new Error(`Invalid action output format: repair failed - ${repairMsg}`);
         }
       }
     } else {
@@ -389,7 +393,7 @@ export class NavigatorAgent extends BaseAgent<z.ZodType, NavigatorResult> {
         }
 
         const indexArg = actionInstance.getIndexArg(actionArgs);
-        if (i > 0 && indexArg !== null) {
+        if (i > 0 && indexArg !== null && indexArg !== undefined) {
           const newState = await browserContext.getState(this.context.options.useVision);
           const newPathHashes = await calcBranchPathHashSet(newState);
           // next action requires index but there are new elements on the page
@@ -412,7 +416,7 @@ export class NavigatorAgent extends BaseAgent<z.ZodType, NavigatorResult> {
         }
 
         // if the action has an index argument, record the interacted element to the result
-        if (indexArg !== null) {
+        if (indexArg !== null && indexArg !== undefined) {
           const domElement = browserState.selectorMap.get(indexArg);
           if (domElement) {
             const interactedElement = HistoryTreeProcessor.convertDomElementToHistoryElement(domElement);

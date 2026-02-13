@@ -959,5 +959,59 @@
         "example": "Option not found"
       }
     }
+  },
+  "act_autoFill_start": {
+    "message": "正在使用個人資料自動填寫表單"
+  },
+  "act_autoFill_noData": {
+    "message": "沒有可用的個人資料來填寫表單。請在設定中設定您的個人資料。"
+  },
+  "act_autoFill_ok": {
+    "message": "已成功填寫 $COUNT$ 個表單欄位",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "act_autoFill_failed": {
+    "message": "自動填寫表單失敗：$ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "連線錯誤"
+      }
+    }
+  },
+  "act_useCredential_start": {
+    "message": "正在使用已儲存的憑證進行登入"
+  },
+  "act_useCredential_noCredential": {
+    "message": "找不到 $SITE$ 的已儲存憑證。請在個人資料設定中新增憑證。",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "act_useCredential_ok": {
+    "message": "已成功填寫 $SITE$ 的登入憑證",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "act_useCredential_failed": {
+    "message": "使用憑證失敗：$ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "連線錯誤"
+      }
+    }
   }
 }
