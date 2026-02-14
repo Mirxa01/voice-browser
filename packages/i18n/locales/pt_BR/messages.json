@@ -1214,5 +1214,8 @@
   },
   "voice_tts_stopped": {
     "message": "Stopped speaking"
+  },
+  "voice_live_listening": {
+    "message": "Listening..."
   }
 }

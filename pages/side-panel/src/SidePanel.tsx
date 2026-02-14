@@ -252,7 +252,7 @@ const SidePanel = () => {
               const afterWakeWord = transcript.substring(wakeWordIndex + liveVoiceWakeWordRef.current.length).trim();
 
               setAwake(true);
-              speakText(t('voice_command_received'));
+              speakText(t('voice_live_listening'));
               liveVoiceCommandBufferRef.current = afterWakeWord;
 
               // Clear any existing timeout
@@ -359,6 +359,8 @@ const SidePanel = () => {
       }
       unsubscribe();
     };
+    // Empty deps: runs once on mount. Uses refs (recognitionRef, liveVoiceAwakeRef, handleSendMessageRef)
+    // to avoid stale closures. Settings changes are handled via voiceSettingsStore.subscribe().
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const appendMessage = useCallback((newMessage: Message, sessionId?: string | null) => {
@@ -1279,11 +1281,11 @@ const SidePanel = () => {
                     className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
                       liveVoiceAwake ? 'animate-pulse bg-green-500/20 text-green-400' : 'bg-sky-500/20 text-sky-400'
                     }`}
-                    title={liveVoiceAwake ? t('voice_command_received') : t('voice_live_mode_enabled')}>
+                    title={liveVoiceAwake ? t('voice_live_listening') : t('voice_live_mode_enabled')}>
                     <span
                       className={`inline-block size-1.5 rounded-full ${liveVoiceAwake ? 'bg-green-400' : 'bg-sky-400'}`}
                     />
-                    {liveVoiceAwake ? t('voice_tts_speaking') : t('voice_live_mode_enabled')}
+                    {liveVoiceAwake ? t('voice_live_listening') : t('voice_live_mode_enabled')}
                   </span>
                 )}
               </div>

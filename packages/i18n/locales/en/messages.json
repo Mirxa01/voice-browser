@@ -262,7 +262,6 @@
   "options_general_replayHistoricalTasks_desc": {
     "message": "Enable storing and replaying of agent step history (experimental, may have issues)"
   },
-
   "options_models_providers_header": {
     "message": "LLM Providers"
   },
@@ -290,7 +289,6 @@
   "options_models_providers_custom_name_placeholder": {
     "message": "Provider name"
   },
-
   "options_models_providers_apiKey": {
     "message": "API Key"
   },
@@ -309,21 +307,18 @@
   "options_models_providers_apiKey_show": {
     "message": "Show API key"
   },
-
   "options_models_selection_header": {
     "message": "Model Selection"
   },
   "options_models_speechToText_header": {
     "message": "Speech-to-Text Model"
   },
-
   "options_models_agents_navigator": {
     "message": "Navigates websites and performs actions"
   },
   "options_models_agents_planner": {
     "message": "Develops and refines strategies to complete tasks"
   },
-
   "options_models_labels_model": {
     "message": "Model"
   },
@@ -411,7 +406,6 @@
       }
     }
   },
-
   "options_firewall_header": {
     "message": "Firewall"
   },
@@ -448,7 +442,6 @@
   "options_firewall_howItWorks": {
     "message": "The firewall contains a deny list and an allow list.\nIf both lists are empty, all URLs are allowed\nDeny list takes priority - if a URL matches any deny list entry, it's blocked\nWhen allow list is empty, all non-denied URLs are allowed\nWhen allow list is not empty, only matching URLs are allowed\nWildcards are NOT supported yet\nAllow list is preferred over deny list"
   },
-
   "bg_errors_noTabId": {
     "message": "No tab ID provided"
   },
@@ -548,7 +541,6 @@
   "exec_replay_historyEmpty": {
     "message": "History is empty"
   },
-
   "act_searchGoogle_start": {
     "message": "Searching for \"$QUERY$\" in Google",
     "placeholders": {
@@ -968,7 +960,6 @@
       }
     }
   },
-
   "voice_tts_enabled": {
     "message": "Voice feedback enabled"
   },
@@ -1008,7 +999,6 @@
       }
     }
   },
-
   "options_tabs_profile": {
     "message": "Profile"
   },
@@ -1078,7 +1068,6 @@
   "options_profile_saved": {
     "message": "Profile saved successfully"
   },
-
   "options_voice_header": {
     "message": "Voice Settings"
   },
@@ -1118,7 +1107,6 @@
   "options_voice_wake_word_desc": {
     "message": "Say this word to activate voice input (e.g., 'Hey Browser')"
   },
-
   "options_memory_header": {
     "message": "Memory & Learning"
   },
@@ -1155,7 +1143,6 @@
       }
     }
   },
-
   "common_cancel": {
     "message": "Cancel"
   },
@@ -1174,7 +1161,6 @@
   "voice_feedback_task_failed_generic": {
     "message": "Task failed"
   },
-
   "act_autoFill_start": {
     "message": "Auto-filling form with profile data"
   },
@@ -1199,7 +1185,6 @@
       }
     }
   },
-
   "act_useCredential_start": {
     "message": "Using stored credentials for login"
   },
@@ -1229,5 +1214,8 @@
         "example": "Connection error"
       }
     }
+  },
+  "voice_live_listening": {
+    "message": "Listening..."
   }
 }
