@@ -21,11 +21,36 @@ import BookmarkList from './components/BookmarkList';
 import { EventType, type AgentEvent, ExecutionState } from './types/event';
 import './SidePanel.css';
 
-// Declare chrome API types
+// Declare chrome API types and Web Speech API
 declare global {
   interface Window {
     chrome: typeof chrome;
+    SpeechRecognition: new () => SpeechRecognitionInstance;
+    webkitSpeechRecognition: new () => SpeechRecognitionInstance;
   }
+}
+
+// Web Speech API types (not in standard TS lib)
+interface SpeechRecognitionInstance extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onstart: ((this: SpeechRecognitionInstance, ev: Event) => void) | null;
+  onresult: ((this: SpeechRecognitionInstance, ev: SpeechRecognitionResultEvent) => void) | null;
+  onerror: ((this: SpeechRecognitionInstance, ev: SpeechRecognitionErrorEv) => void) | null;
+  onend: ((this: SpeechRecognitionInstance, ev: Event) => void) | null;
+}
+
+interface SpeechRecognitionResultEvent extends Event {
+  readonly results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionErrorEv extends Event {
+  readonly error: string;
+  readonly message: string;
 }
 
 // Text-to-Speech helper for voice feedback
@@ -74,6 +99,9 @@ const SidePanel = () => {
   const [isProcessingSpeech, setIsProcessingSpeech] = useState(false);
   const [isReplaying, setIsReplaying] = useState(false);
   const [replayEnabled, setReplayEnabled] = useState(false);
+  const [isLiveVoiceActive, setIsLiveVoiceActive] = useState(false);
+  const [liveVoiceAwake, setLiveVoiceAwake] = useState(false);
+  const liveVoiceAwakeRef = useRef(false);
   const sessionIdRef = useRef<string | null>(null);
   const isReplayingRef = useRef<boolean>(false);
   const portRef = useRef<chrome.runtime.Port | null>(null);
@@ -83,6 +111,10 @@ const SidePanel = () => {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recordingTimerRef = useRef<number | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const liveVoiceWakeWordRef = useRef<string>('Hey Browser');
+  const liveVoiceCommandBufferRef = useRef<string>('');
+  const liveVoiceTimeoutRef = useRef<number | null>(null);
 
   // Check for dark mode preference
   useEffect(() => {
@@ -160,6 +192,174 @@ const SidePanel = () => {
   useEffect(() => {
     isReplayingRef.current = isReplaying;
   }, [isReplaying]);
+
+  // Ref to allow live voice effect to call handleSendMessage
+  const handleSendMessageRef = useRef<((text: string) => void) | null>(null);
+
+  // Live voice mode - continuous speech recognition with wake word detection
+  useEffect(() => {
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) return;
+
+    let cancelled = false;
+
+    const setAwake = (value: boolean) => {
+      liveVoiceAwakeRef.current = value;
+      setLiveVoiceAwake(value);
+    };
+
+    const startLiveVoice = async () => {
+      try {
+        const settings = await voiceSettingsStore.getSettings();
+        if (!settings.liveVoiceEnabled || cancelled) {
+          // If live voice was active, stop it
+          if (recognitionRef.current) {
+            recognitionRef.current.abort();
+            recognitionRef.current = null;
+          }
+          setIsLiveVoiceActive(false);
+          setAwake(false);
+          return;
+        }
+
+        liveVoiceWakeWordRef.current = (settings.wakeWord || 'Hey Browser').toLowerCase();
+
+        // Don't restart if already active
+        if (recognitionRef.current) return;
+
+        const recognition = new SpeechRecognitionAPI();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+          if (!cancelled) setIsLiveVoiceActive(true);
+        };
+
+        recognition.onresult = (event: SpeechRecognitionResultEvent) => {
+          if (cancelled) return;
+
+          // Get the latest result
+          const lastResultIndex = event.results.length - 1;
+          const result = event.results[lastResultIndex];
+          const transcript = result[0].transcript.toLowerCase().trim();
+
+          if (!liveVoiceAwakeRef.current) {
+            // Listening for wake word
+            if (transcript.includes(liveVoiceWakeWordRef.current)) {
+              // Extract command after wake word
+              const wakeWordIndex = transcript.indexOf(liveVoiceWakeWordRef.current);
+              const afterWakeWord = transcript.substring(wakeWordIndex + liveVoiceWakeWordRef.current.length).trim();
+
+              setAwake(true);
+              speakText(t('voice_command_received'));
+              liveVoiceCommandBufferRef.current = afterWakeWord;
+
+              // Clear any existing timeout
+              if (liveVoiceTimeoutRef.current) {
+                window.clearTimeout(liveVoiceTimeoutRef.current);
+              }
+
+              // If the result is final and has content after wake word, submit immediately
+              if (result.isFinal && afterWakeWord.length > 0) {
+                const command = afterWakeWord;
+                setAwake(false);
+                liveVoiceCommandBufferRef.current = '';
+                if (handleSendMessageRef.current) {
+                  handleSendMessageRef.current(command);
+                }
+              } else {
+                // Set timeout to submit command after silence
+                liveVoiceTimeoutRef.current = window.setTimeout(() => {
+                  const command = liveVoiceCommandBufferRef.current.trim();
+                  setAwake(false);
+                  liveVoiceCommandBufferRef.current = '';
+                  if (command && handleSendMessageRef.current) {
+                    handleSendMessageRef.current(command);
+                  }
+                }, 3000);
+              }
+            }
+          } else {
+            // Already awake - accumulating command
+            const fullTranscript = result[0].transcript.trim();
+            liveVoiceCommandBufferRef.current = fullTranscript;
+
+            // Reset the silence timeout
+            if (liveVoiceTimeoutRef.current) {
+              window.clearTimeout(liveVoiceTimeoutRef.current);
+            }
+
+            if (result.isFinal) {
+              // Final result - submit the command
+              const command = fullTranscript;
+              setAwake(false);
+              liveVoiceCommandBufferRef.current = '';
+              if (command && handleSendMessageRef.current) {
+                handleSendMessageRef.current(command);
+              }
+            } else {
+              // Set timeout to submit command after silence
+              liveVoiceTimeoutRef.current = window.setTimeout(() => {
+                const command = liveVoiceCommandBufferRef.current.trim();
+                setAwake(false);
+                liveVoiceCommandBufferRef.current = '';
+                if (command && handleSendMessageRef.current) {
+                  handleSendMessageRef.current(command);
+                }
+              }, 3000);
+            }
+          }
+        };
+
+        recognition.onerror = (event: SpeechRecognitionErrorEv) => {
+          // 'no-speech' and 'aborted' are expected in continuous mode
+          if (event.error === 'no-speech' || event.error === 'aborted') return;
+          console.error('Live voice recognition error:', event.error);
+        };
+
+        recognition.onend = () => {
+          if (!cancelled && recognitionRef.current) {
+            // Auto-restart if still enabled
+            try {
+              recognition.start();
+            } catch {
+              // Ignore errors on restart
+            }
+          } else {
+            setIsLiveVoiceActive(false);
+            setAwake(false);
+          }
+        };
+
+        recognitionRef.current = recognition;
+        recognition.start();
+      } catch (error) {
+        console.error('Failed to start live voice mode:', error);
+        setIsLiveVoiceActive(false);
+      }
+    };
+
+    startLiveVoice();
+
+    // Subscribe to voice settings changes
+    const unsubscribe = voiceSettingsStore.subscribe(() => {
+      if (!cancelled) startLiveVoice();
+    });
+
+    return () => {
+      cancelled = true;
+      if (liveVoiceTimeoutRef.current) {
+        window.clearTimeout(liveVoiceTimeoutRef.current);
+        liveVoiceTimeoutRef.current = null;
+      }
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+        recognitionRef.current = null;
+      }
+      unsubscribe();
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const appendMessage = useCallback((newMessage: Message, sessionId?: string | null) => {
     // Don't save progress messages
@@ -687,6 +887,11 @@ const SidePanel = () => {
     }
   };
 
+  // Keep handleSendMessageRef in sync for live voice mode
+  useEffect(() => {
+    handleSendMessageRef.current = handleSendMessage;
+  });
+
   const handleStopTask = async () => {
     try {
       portRef.current?.postMessage({
@@ -868,6 +1073,15 @@ const SidePanel = () => {
       if (recordingTimerRef.current) {
         clearTimeout(recordingTimerRef.current);
         recordingTimerRef.current = null;
+      }
+      // Stop live voice recognition
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+        recognitionRef.current = null;
+      }
+      if (liveVoiceTimeoutRef.current) {
+        clearTimeout(liveVoiceTimeoutRef.current);
+        liveVoiceTimeoutRef.current = null;
       }
       stopConnection();
     };
@@ -1058,7 +1272,21 @@ const SidePanel = () => {
                 {t('nav_back')}
               </button>
             ) : (
-              <img src="/icon-128.png" alt="Extension Logo" className="size-6" />
+              <div className="flex items-center gap-2">
+                <img src="/icon-128.png" alt="Extension Logo" className="size-6" />
+                {isLiveVoiceActive && (
+                  <span
+                    className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                      liveVoiceAwake ? 'animate-pulse bg-green-500/20 text-green-400' : 'bg-sky-500/20 text-sky-400'
+                    }`}
+                    title={liveVoiceAwake ? t('voice_command_received') : t('voice_live_mode_enabled')}>
+                    <span
+                      className={`inline-block size-1.5 rounded-full ${liveVoiceAwake ? 'bg-green-400' : 'bg-sky-400'}`}
+                    />
+                    {liveVoiceAwake ? t('voice_tts_speaking') : t('voice_live_mode_enabled')}
+                  </span>
+                )}
+              </div>
             )}
           </div>
           <div className="header-icons">
