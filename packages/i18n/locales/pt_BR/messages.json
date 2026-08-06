@@ -394,6 +394,24 @@
   "options_models_providers_ollama_learnMore": {
     "message": "Saiba mais"
   },
+  "options_models_providers_fetchModels_btn": {
+    "message": "Buscar Modelos"
+  },
+  "options_models_providers_fetchModels_loading": {
+    "message": "Buscando…"
+  },
+  "options_models_providers_fetchModels_empty": {
+    "message": "Nenhum modelo retornado pelo provedor."
+  },
+  "options_models_providers_fetchModels_error": {
+    "message": "Falha ao buscar modelos: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "HTTP 401"
+      }
+    }
+  },
   "options_models_providers_errors_spacesNotAllowed": {
     "message": "Espaços não são permitidos em nomes de provedores. Por favor, use sublinhados ou outros caracteres."
   },

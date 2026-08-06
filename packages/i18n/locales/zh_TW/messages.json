@@ -394,6 +394,24 @@
   "options_models_providers_ollama_learnMore": {
     "message": "深入瞭解"
   },
+  "options_models_providers_fetchModels_btn": {
+    "message": "擷取模型"
+  },
+  "options_models_providers_fetchModels_loading": {
+    "message": "擷取中…"
+  },
+  "options_models_providers_fetchModels_empty": {
+    "message": "提供者未回傳任何模型。"
+  },
+  "options_models_providers_fetchModels_error": {
+    "message": "擷取模型失敗：$ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "HTTP 401"
+      }
+    }
+  },
   "options_models_providers_errors_spacesNotAllowed": {
     "message": "提供者名稱不允許使用空格。請改用底線或其他字元。"
   },

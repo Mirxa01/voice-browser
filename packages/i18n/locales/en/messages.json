@@ -394,6 +394,24 @@
   "options_models_providers_ollama_learnMore": {
     "message": "Learn more"
   },
+  "options_models_providers_fetchModels_btn": {
+    "message": "Fetch Models"
+  },
+  "options_models_providers_fetchModels_loading": {
+    "message": "Fetching…"
+  },
+  "options_models_providers_fetchModels_empty": {
+    "message": "No models returned by the provider."
+  },
+  "options_models_providers_fetchModels_error": {
+    "message": "Failed to fetch models: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "HTTP 401"
+      }
+    }
+  },
   "options_models_providers_errors_spacesNotAllowed": {
     "message": "Spaces are not allowed in provider names. Please use underscores or other characters instead."
   },
