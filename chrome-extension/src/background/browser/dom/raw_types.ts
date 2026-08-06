@@ -42,11 +42,15 @@ export interface PerfMetrics {
   cacheMetrics: {
     boundingRectCacheHits: number;
     boundingRectCacheMisses: number;
+    clientRectCacheHits: number;
+    clientRectCacheMisses: number;
     computedStyleCacheHits: number;
     computedStyleCacheMisses: number;
     getBoundingClientRectTime: number;
+    getClientRectsTime: number;
     getComputedStyleTime: number;
     boundingRectHitRate: number;
+    clientRectHitRate: number;
     computedStyleHitRate: number;
     overallHitRate: number;
   };

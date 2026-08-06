@@ -75,33 +75,36 @@ window.buildDomTree = (
    * @returns {object} The aggregated performance metrics.
    */
   function buildPerfMetrics() {
-    const { boundingRectCacheHits, boundingRectCacheMisses, computedStyleCacheHits, computedStyleCacheMisses } =
-      PERF.cacheMetrics;
-    const totalHits = boundingRectCacheHits + computedStyleCacheHits + PERF.cacheMetrics.clientRectCacheHits;
-    const totalMisses = boundingRectCacheMisses + computedStyleCacheMisses + PERF.cacheMetrics.clientRectCacheMisses;
+    const {
+      boundingRectCacheHits,
+      boundingRectCacheMisses,
+      clientRectCacheHits,
+      clientRectCacheMisses,
+      computedStyleCacheHits,
+      computedStyleCacheMisses,
+    } = PERF.cacheMetrics;
+    const totalHits = boundingRectCacheHits + clientRectCacheHits + computedStyleCacheHits;
+    const totalMisses = boundingRectCacheMisses + clientRectCacheMisses + computedStyleCacheMisses;
 
     return {
       nodeMetrics: { ...PERF.nodeMetrics },
       cacheMetrics: {
         boundingRectCacheHits,
         boundingRectCacheMisses,
+        clientRectCacheHits,
+        clientRectCacheMisses,
         computedStyleCacheHits,
         computedStyleCacheMisses,
         getBoundingClientRectTime: PERF.cacheMetrics.getBoundingClientRectTime,
+        getClientRectsTime: PERF.cacheMetrics.getClientRectsTime,
         getComputedStyleTime: PERF.cacheMetrics.getComputedStyleTime,
         boundingRectHitRate: hitRate(boundingRectCacheHits, boundingRectCacheMisses),
+        clientRectHitRate: hitRate(clientRectCacheHits, clientRectCacheMisses),
         computedStyleHitRate: hitRate(computedStyleCacheHits, computedStyleCacheMisses),
         overallHitRate: hitRate(totalHits, totalMisses),
       },
       timings: { ...PERF.timings },
-      buildDomTreeBreakdown: {
-        ...PERF.breakdown,
-        clientRects: {
-          hits: PERF.cacheMetrics.clientRectCacheHits,
-          misses: PERF.cacheMetrics.clientRectCacheMisses,
-          time: PERF.cacheMetrics.getClientRectsTime,
-        },
-      },
+      buildDomTreeBreakdown: { ...PERF.breakdown },
     };
   }
 
