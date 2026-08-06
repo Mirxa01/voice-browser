@@ -963,20 +963,8 @@
   "voice_tts_enabled": {
     "message": "Voice feedback enabled"
   },
-  "voice_tts_disabled": {
-    "message": "Voice feedback disabled"
-  },
-  "voice_tts_speaking": {
-    "message": "Speaking..."
-  },
-  "voice_tts_stopped": {
-    "message": "Stopped speaking"
-  },
   "voice_live_mode_enabled": {
     "message": "Live voice mode enabled - listening for commands"
-  },
-  "voice_live_mode_disabled": {
-    "message": "Live voice mode disabled"
   },
   "voice_command_received": {
     "message": "Command received: $COMMAND$",
@@ -1067,9 +1055,6 @@
   },
   "options_profile_saved": {
     "message": "Profile saved successfully"
-  },
-  "options_voice_header": {
-    "message": "Voice Settings"
   },
   "options_voice_tts_header": {
     "message": "Text-to-Speech"

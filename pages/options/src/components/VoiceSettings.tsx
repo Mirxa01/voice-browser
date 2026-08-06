@@ -131,20 +131,28 @@ export const VoiceSettingsComponent = ({ isDarkMode = false }: VoiceSettingsProp
           {settings.ttsEnabled && (
             <>
               <div className="flex items-center">
-                <label className={`w-24 text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <label
+                  htmlFor="voice-tts-voice"
+                  className={`w-24 text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {t('options_voice_tts_voice')}
                 </label>
-                <select
-                  value={settings.ttsVoice}
-                  onChange={e => handleSettingChange('ttsVoice', e.target.value)}
-                  className={`flex-1 rounded-md border text-sm ${isDarkMode ? 'border-slate-600 bg-slate-700 text-gray-200' : 'border-gray-300 bg-white text-gray-700'} px-3 py-2`}>
-                  <option value="">{t('options_voice_tts_voice_systemDefault')}</option>
-                  {availableVoices.map(voice => (
-                    <option key={voice.name} value={voice.name}>
-                      {voice.name} ({voice.lang})
-                    </option>
-                  ))}
-                </select>
+                <div className="flex-1">
+                  <select
+                    id="voice-tts-voice"
+                    value={settings.ttsVoice}
+                    onChange={e => handleSettingChange('ttsVoice', e.target.value)}
+                    className={`w-full rounded-md border text-sm ${isDarkMode ? 'border-slate-600 bg-slate-700 text-gray-200' : 'border-gray-300 bg-white text-gray-700'} px-3 py-2`}>
+                    <option value="">{t('options_voice_tts_voice_systemDefault')}</option>
+                    {availableVoices.map(voice => (
+                      <option key={voice.name} value={voice.name}>
+                        {voice.name} ({voice.lang})
+                      </option>
+                    ))}
+                  </select>
+                  <p className={`mt-1 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {t('options_voice_tts_voice_desc')}
+                  </p>
+                </div>
               </div>
 
               {/* Speech Rate */}

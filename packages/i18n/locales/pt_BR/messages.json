@@ -1131,9 +1131,6 @@
   "options_tabs_voice": {
     "message": "Voice"
   },
-  "options_voice_header": {
-    "message": "Voice Settings"
-  },
   "options_voice_live_enabled": {
     "message": "Enable Live Voice Mode"
   },
@@ -1197,23 +1194,11 @@
   "voice_feedback_task_failed_generic": {
     "message": "Task failed"
   },
-  "voice_live_mode_disabled": {
-    "message": "Live voice mode disabled"
-  },
   "voice_live_mode_enabled": {
     "message": "Live voice mode enabled - listening for commands"
   },
-  "voice_tts_disabled": {
-    "message": "Voice feedback disabled"
-  },
   "voice_tts_enabled": {
     "message": "Voice feedback enabled"
-  },
-  "voice_tts_speaking": {
-    "message": "Speaking..."
-  },
-  "voice_tts_stopped": {
-    "message": "Stopped speaking"
   },
   "voice_live_listening": {
     "message": "Listening..."
