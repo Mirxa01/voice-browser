@@ -428,7 +428,7 @@
     "message": "Nenhum domínio na lista de negações"
   },
   "options_firewall_placeholders_domainUrl": {
-    "message": "Insira domínio ou URL (ex: example.com, localhost, 127.0.0.1)"
+    "message": "Insira domínio, URL ou curinga (ex: example.com, *.example.com, example.com/admin/*)"
   },
   "options_firewall_btnAdd": {
     "message": "Adicionar"
@@ -440,7 +440,7 @@
     "message": "Como o Firewall Funciona"
   },
   "options_firewall_howItWorks": {
-    "message": "O firewall contém uma lista de negações e uma lista de permissões.\nSe ambas as listas estiverem vazias, todos os URLs são permitidos\nA lista de negações tem prioridade - se um URL corresponder a qualquer entrada da lista de negações, ele será bloqueado\nQuando a lista de permissões está vazia, todos os URLs não negados são permitidos\nQuando a lista de permissões não está vazia, apenas os URLs correspondentes são permitidos\nCuringas ainda NÃO são suportados\nA lista de permissões é preferível à lista de negações"
+    "message": "O firewall contém uma lista de negações e uma lista de permissões.\nSe ambas as listas estiverem vazias, todos os URLs são permitidos\nA lista de negações tem prioridade - se um URL corresponder a qualquer entrada da lista de negações, ele será bloqueado\nQuando a lista de permissões está vazia, todos os URLs não negados são permitidos\nQuando a lista de permissões não está vazia, apenas os URLs correspondentes são permitidos\nUma entrada sem curinga corresponde ao domínio e a todos os seus subdomínios\nUse * como curinga, ex: *.example.com corresponde a todos os subdomínios, example.com/admin/* corresponde a um caminho\nA lista de permissões é preferível à lista de negações"
   },
   "bg_errors_noTabId": {
     "message": "Nenhum ID de aba fornecido"
@@ -1217,5 +1217,65 @@
   },
   "voice_live_listening": {
     "message": "Listening..."
+  },
+  "options_tabs_analytics": {
+    "message": "Análises"
+  },
+  "options_tabs_memory": {
+    "message": "Memória"
+  },
+  "options_analytics_header": {
+    "message": "Configurações de Análises"
+  },
+  "options_analytics_loadFailed": {
+    "message": "Falha ao carregar as configurações de análises."
+  },
+  "options_analytics_enableToggle": {
+    "message": "Ajude a melhorar o Mirza Browser"
+  },
+  "options_analytics_toggleAnalytics_a11y": {
+    "message": "Alternar análises"
+  },
+  "options_analytics_enableToggle_desc": {
+    "message": "Compartilhe dados de uso anônimos para nos ajudar a melhorar a extensão"
+  },
+  "options_analytics_collect_header": {
+    "message": "O que coletamos:"
+  },
+  "options_analytics_collect_metrics": {
+    "message": "Métricas de execução de tarefas (início, conclusão, contagem de falhas e duração)"
+  },
+  "options_analytics_collect_domains": {
+    "message": "Nomes de domínio dos sites visitados (ex: \"amazon.com\", não URLs completos)"
+  },
+  "options_analytics_collect_errors": {
+    "message": "Categorias de erro para tarefas com falha (sem detalhes sensíveis)"
+  },
+  "options_analytics_collect_usage": {
+    "message": "Estatísticas de uso anônimas"
+  },
+  "options_analytics_notCollect_header": {
+    "message": "O que NÃO coletamos:"
+  },
+  "options_analytics_notCollect_personal": {
+    "message": "Informações pessoais ou credenciais de login"
+  },
+  "options_analytics_notCollect_urls": {
+    "message": "URLs completos ou conteúdo de páginas"
+  },
+  "options_analytics_notCollect_prompts": {
+    "message": "Instruções de tarefas ou prompts do usuário"
+  },
+  "options_analytics_notCollect_screenshots": {
+    "message": "Gravações de tela ou capturas de tela"
+  },
+  "options_analytics_notCollect_sensitive": {
+    "message": "Quaisquer dados sensíveis ou privados"
+  },
+  "options_analytics_disabledNotice": {
+    "message": "Análises desativadas. Você pode reativá-las a qualquer momento para ajudar a melhorar o Mirza Browser."
+  },
+  "options_voice_tts_voice_systemDefault": {
+    "message": "Padrão do Sistema"
   }
 }

@@ -428,7 +428,7 @@
     "message": "拒絕清單中沒有網域"
   },
   "options_firewall_placeholders_domainUrl": {
-    "message": "請輸入網域或 URL (例如 example.com, localhost, 127.0.0.1)"
+    "message": "請輸入網域、URL 或萬用字元 (例如 example.com, *.example.com, example.com/admin/*)"
   },
   "options_firewall_btnAdd": {
     "message": "新增"
@@ -440,7 +440,7 @@
     "message": "防火牆運作原理"
   },
   "options_firewall_howItWorks": {
-    "message": "防火牆包含一個拒絕清單和一個允許清單。\n- 如果兩個清單都為空，則允許所有 URL。\n- 拒絕清單具有較高優先順序。如果一個 URL 符合任何拒絕清單中的項目，它將被封鎖。\n- 當允許清單為空時，所有未被拒絕的 URL 都會被允許。\n- 當允許清單不為空時，只有符合清單中項目的 URL 才被允許。\n- 目前尚不支援萬用字元。\n- 建議優先使用允許清單，而非拒絕清單。"
+    "message": "防火牆包含一個拒絕清單和一個允許清單。\n- 如果兩個清單都為空，則允許所有 URL。\n- 拒絕清單具有較高優先順序。如果一個 URL 符合任何拒絕清單中的項目，它將被封鎖。\n- 當允許清單為空時，所有未被拒絕的 URL 都會被允許。\n- 當允許清單不為空時，只有符合清單中項目的 URL 才被允許。\n- 未使用萬用字元的項目會符合該網域及其所有子網域。\n- 使用 * 作為萬用字元，例如 *.example.com 可符合所有子網域，example.com/admin/* 可符合特定路徑。\n- 建議優先使用允許清單，而非拒絕清單。"
   },
   "bg_errors_noTabId": {
     "message": "未提供分頁 ID"
@@ -1217,5 +1217,65 @@
   },
   "voice_live_listening": {
     "message": "Listening..."
+  },
+  "options_tabs_analytics": {
+    "message": "分析"
+  },
+  "options_tabs_memory": {
+    "message": "記憶"
+  },
+  "options_analytics_header": {
+    "message": "分析設定"
+  },
+  "options_analytics_loadFailed": {
+    "message": "無法載入分析設定。"
+  },
+  "options_analytics_enableToggle": {
+    "message": "協助改進 Mirza Browser"
+  },
+  "options_analytics_toggleAnalytics_a11y": {
+    "message": "切換分析"
+  },
+  "options_analytics_enableToggle_desc": {
+    "message": "分享匿名使用資料，協助我們改進此擴充功能"
+  },
+  "options_analytics_collect_header": {
+    "message": "我們收集的資料："
+  },
+  "options_analytics_collect_metrics": {
+    "message": "任務執行指標（開始、完成、失敗次數與時長）"
+  },
+  "options_analytics_collect_domains": {
+    "message": "造訪網站的網域名稱（例如「amazon.com」，而非完整網址）"
+  },
+  "options_analytics_collect_errors": {
+    "message": "失敗任務的錯誤類別（不含敏感細節）"
+  },
+  "options_analytics_collect_usage": {
+    "message": "匿名使用統計資料"
+  },
+  "options_analytics_notCollect_header": {
+    "message": "我們不會收集的資料："
+  },
+  "options_analytics_notCollect_personal": {
+    "message": "個人資訊或登入憑證"
+  },
+  "options_analytics_notCollect_urls": {
+    "message": "完整網址或頁面內容"
+  },
+  "options_analytics_notCollect_prompts": {
+    "message": "任務指令或使用者提示"
+  },
+  "options_analytics_notCollect_screenshots": {
+    "message": "螢幕錄影或螢幕擷取畫面"
+  },
+  "options_analytics_notCollect_sensitive": {
+    "message": "任何敏感或私人資料"
+  },
+  "options_analytics_disabledNotice": {
+    "message": "分析已停用。您可以隨時重新啟用，協助改進 Mirza Browser。"
+  },
+  "options_voice_tts_voice_systemDefault": {
+    "message": "系統預設"
   }
 }

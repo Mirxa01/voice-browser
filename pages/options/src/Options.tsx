@@ -3,23 +3,25 @@ import '@src/Options.css';
 import { Button } from '@extension/ui';
 import { withErrorBoundary, withSuspense } from '@extension/shared';
 import { t } from '@extension/i18n';
-import { FiSettings, FiCpu, FiShield, FiTrendingUp, FiHelpCircle, FiMic, FiUser } from 'react-icons/fi';
+import { FiSettings, FiCpu, FiShield, FiTrendingUp, FiHelpCircle, FiMic, FiUser, FiDatabase } from 'react-icons/fi';
 import { GeneralSettings } from './components/GeneralSettings';
 import { ModelSettings } from './components/ModelSettings';
 import { FirewallSettings } from './components/FirewallSettings';
 import { AnalyticsSettings } from './components/AnalyticsSettings';
 import { VoiceSettingsComponent } from './components/VoiceSettings';
 import { ProfileSettings } from './components/ProfileSettings';
+import { MemorySettingsComponent } from './components/MemorySettings';
 
-type TabTypes = 'general' | 'models' | 'firewall' | 'analytics' | 'voice' | 'profile' | 'help';
+type TabTypes = 'general' | 'models' | 'firewall' | 'analytics' | 'voice' | 'profile' | 'memory' | 'help';
 
 const TABS: { id: TabTypes; icon: React.ComponentType<{ className?: string }>; label: string }[] = [
   { id: 'general', icon: FiSettings, label: t('options_tabs_general') },
   { id: 'models', icon: FiCpu, label: t('options_tabs_models') },
   { id: 'voice', icon: FiMic, label: t('options_tabs_voice') },
   { id: 'profile', icon: FiUser, label: t('options_tabs_profile') },
+  { id: 'memory', icon: FiDatabase, label: t('options_tabs_memory') },
   { id: 'firewall', icon: FiShield, label: t('options_tabs_firewall') },
-  { id: 'analytics', icon: FiTrendingUp, label: 'Analytics' },
+  { id: 'analytics', icon: FiTrendingUp, label: t('options_tabs_analytics') },
   { id: 'help', icon: FiHelpCircle, label: t('options_tabs_help') },
 ];
 
@@ -62,6 +64,8 @@ const Options = () => {
         return <VoiceSettingsComponent isDarkMode={isDarkMode} />;
       case 'profile':
         return <ProfileSettings isDarkMode={isDarkMode} />;
+      case 'memory':
+        return <MemorySettingsComponent isDarkMode={isDarkMode} />;
       default:
         return null;
     }
@@ -88,7 +92,7 @@ const Options = () => {
                         ? `${isDarkMode ? 'bg-slate-700/70 text-gray-300 hover:text-white' : 'bg-[#0EA5E9]/15 font-medium text-gray-700 hover:text-white'} backdrop-blur-sm`
                         : `${isDarkMode ? 'bg-sky-800/50' : ''} text-white backdrop-blur-sm`
                     }`}>
-                  <item.icon className="h-4 w-4" />
+                  <item.icon className="size-4" />
                   <span>{item.label}</span>
                 </Button>
               </li>

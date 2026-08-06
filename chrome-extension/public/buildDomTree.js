@@ -27,6 +27,84 @@ window.buildDomTree = (
     },
   };
 
+  // Performance instrumentation. Counters are always cheap to maintain, but the
+  // aggregated report is only computed and returned when debugMode is enabled.
+  const PERF = {
+    nodeMetrics: { totalNodes: 0, processedNodes: 0, skippedNodes: 0 },
+    cacheMetrics: {
+      boundingRectCacheHits: 0,
+      boundingRectCacheMisses: 0,
+      clientRectCacheHits: 0,
+      clientRectCacheMisses: 0,
+      computedStyleCacheHits: 0,
+      computedStyleCacheMisses: 0,
+      getBoundingClientRectTime: 0,
+      getClientRectsTime: 0,
+      getComputedStyleTime: 0,
+    },
+    timings: { buildDomTree: 0, highlightElements: 0, total: 0 },
+    breakdown: { textNodes: 0, elementNodes: 0, iframeNodes: 0, shadowRootNodes: 0, highlightedNodes: 0 },
+  };
+
+  /**
+   * Returns a high resolution timestamp, falling back to Date.now when the
+   * Performance API is unavailable (e.g. hardened sandboxes).
+   *
+   * @returns {number} A timestamp in milliseconds.
+   */
+  function now() {
+    return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+  }
+
+  /**
+   * Computes a hit rate, guarding against division by zero.
+   *
+   * @param {number} hits - Number of cache hits.
+   * @param {number} misses - Number of cache misses.
+   * @returns {number} The hit rate in the range [0, 1].
+   */
+  function hitRate(hits, misses) {
+    const total = hits + misses;
+    return total > 0 ? hits / total : 0;
+  }
+
+  /**
+   * Builds the performance report matching the `PerfMetrics` type consumed by
+   * the extension's DOM service.
+   *
+   * @returns {object} The aggregated performance metrics.
+   */
+  function buildPerfMetrics() {
+    const { boundingRectCacheHits, boundingRectCacheMisses, computedStyleCacheHits, computedStyleCacheMisses } =
+      PERF.cacheMetrics;
+    const totalHits = boundingRectCacheHits + computedStyleCacheHits + PERF.cacheMetrics.clientRectCacheHits;
+    const totalMisses = boundingRectCacheMisses + computedStyleCacheMisses + PERF.cacheMetrics.clientRectCacheMisses;
+
+    return {
+      nodeMetrics: { ...PERF.nodeMetrics },
+      cacheMetrics: {
+        boundingRectCacheHits,
+        boundingRectCacheMisses,
+        computedStyleCacheHits,
+        computedStyleCacheMisses,
+        getBoundingClientRectTime: PERF.cacheMetrics.getBoundingClientRectTime,
+        getComputedStyleTime: PERF.cacheMetrics.getComputedStyleTime,
+        boundingRectHitRate: hitRate(boundingRectCacheHits, boundingRectCacheMisses),
+        computedStyleHitRate: hitRate(computedStyleCacheHits, computedStyleCacheMisses),
+        overallHitRate: hitRate(totalHits, totalMisses),
+      },
+      timings: { ...PERF.timings },
+      buildDomTreeBreakdown: {
+        ...PERF.breakdown,
+        clientRects: {
+          hits: PERF.cacheMetrics.clientRectCacheHits,
+          misses: PERF.cacheMetrics.clientRectCacheMisses,
+          time: PERF.cacheMetrics.getClientRectsTime,
+        },
+      },
+    };
+  }
+
   /**
    * Gets the cached bounding rect for an element.
    *
@@ -37,10 +115,14 @@ window.buildDomTree = (
     if (!element) return null;
 
     if (DOM_CACHE.boundingRects.has(element)) {
+      PERF.cacheMetrics.boundingRectCacheHits++;
       return DOM_CACHE.boundingRects.get(element);
     }
 
+    PERF.cacheMetrics.boundingRectCacheMisses++;
+    const start = now();
     const rect = element.getBoundingClientRect();
+    PERF.cacheMetrics.getBoundingClientRectTime += now() - start;
 
     if (rect) {
       DOM_CACHE.boundingRects.set(element, rect);
@@ -58,10 +140,14 @@ window.buildDomTree = (
     if (!element) return null;
 
     if (DOM_CACHE.computedStyles.has(element)) {
+      PERF.cacheMetrics.computedStyleCacheHits++;
       return DOM_CACHE.computedStyles.get(element);
     }
 
+    PERF.cacheMetrics.computedStyleCacheMisses++;
+    const start = now();
     const style = window.getComputedStyle(element);
+    PERF.cacheMetrics.getComputedStyleTime += now() - start;
 
     if (style) {
       DOM_CACHE.computedStyles.set(element, style);
@@ -79,10 +165,14 @@ window.buildDomTree = (
     if (!element) return null;
 
     if (DOM_CACHE.clientRects.has(element)) {
+      PERF.cacheMetrics.clientRectCacheHits++;
       return DOM_CACHE.clientRects.get(element);
     }
 
+    PERF.cacheMetrics.clientRectCacheMisses++;
+    const start = now();
     const rects = element.getClientRects();
+    PERF.cacheMetrics.getClientRectsTime += now() - start;
 
     if (rects) {
       DOM_CACHE.clientRects.set(element, rects);
@@ -732,6 +822,9 @@ window.buildDomTree = (
 
     // check whether element has event listeners by window.getEventListeners
     try {
+      // `getEventListeners` is only exposed by the DevTools console command line
+      // API, so it is declared here and guarded with a typeof check.
+      /* global getEventListeners:readonly */
       if (typeof getEventListeners === 'function') {
         const listeners = getEventListeners(element);
         const mouseEvents = ['click', 'mousedown', 'mouseup', 'dblclick'];
@@ -1235,7 +1328,28 @@ window.buildDomTree = (
   const MAX_DEPTH = 100;
   let visitedNodes;
 
+  /**
+   * Recursively converts a DOM node into the flattened hash map representation,
+   * while recording node level performance counters.
+   *
+   * @param {Node} node - The node to process.
+   * @param {object | null} parentIframe - The iframe owning this node, if any.
+   * @param {boolean} isParentHighlighted - Whether an ancestor was highlighted.
+   * @param {number} depth - Current recursion depth.
+   * @returns {string | null} The id assigned to the node, or null when skipped.
+   */
   function buildDomTree(node, parentIframe = null, isParentHighlighted = false, depth = 0) {
+    PERF.nodeMetrics.totalNodes++;
+    const id = buildDomTreeInternal(node, parentIframe, isParentHighlighted, depth);
+    if (id === null) {
+      PERF.nodeMetrics.skippedNodes++;
+    } else {
+      PERF.nodeMetrics.processedNodes++;
+    }
+    return id;
+  }
+
+  function buildDomTreeInternal(node, parentIframe = null, isParentHighlighted = false, depth = 0) {
     // Initialize visited nodes tracking on first call
     if (!visitedNodes) {
       visitedNodes = new WeakSet();
@@ -1307,6 +1421,7 @@ window.buildDomTree = (
         text: textContent,
         isVisible: isTextNodeVisible(node),
       };
+      PERF.breakdown.textNodes++;
       return id;
     }
 
@@ -1393,7 +1508,12 @@ window.buildDomTree = (
         if (nodeData.isTopElement || isMenuContainer) {
           nodeData.isInteractive = isInteractiveElement(node);
           // Call the dedicated highlighting function
+          const highlightStart = now();
           nodeWasHighlighted = handleHighlighting(nodeData, node, parentIframe, isParentHighlighted);
+          PERF.timings.highlightElements += now() - highlightStart;
+          if (nodeWasHighlighted) {
+            PERF.breakdown.highlightedNodes++;
+          }
         }
       }
     }
@@ -1404,6 +1524,7 @@ window.buildDomTree = (
 
       // Handle iframes
       if (tagName === 'iframe') {
+        PERF.breakdown.iframeNodes++;
         const rect = getCachedBoundingRect(node);
         nodeData.attributes['computedHeight'] = String(Math.ceil(rect.height));
         nodeData.attributes['computedWidth'] = String(Math.ceil(rect.width));
@@ -1463,6 +1584,7 @@ window.buildDomTree = (
         // Handle shadow DOM
         if (node.shadowRoot) {
           nodeData.shadowRoot = true;
+          PERF.breakdown.shadowRootNodes++;
           for (const child of Array.from(node.shadowRoot.childNodes)) {
             const domElement = buildDomTree(child, parentIframe, nodeWasHighlighted, depth + 1);
             if (domElement) nodeData.children.push(domElement);
@@ -1491,15 +1613,19 @@ window.buildDomTree = (
 
     const id = `${ID.current++}`;
     DOM_HASH_MAP[id] = nodeData;
+    PERF.breakdown.elementNodes++;
     return id;
   }
 
   // Reset visited nodes for new DOM tree build
   visitedNodes = null;
+  const buildStart = now();
   const rootId = buildDomTree(document.body);
+  PERF.timings.buildDomTree = now() - buildStart;
+  PERF.timings.total = PERF.timings.buildDomTree;
 
   // Clear the cache before starting
   DOM_CACHE.clearCache();
 
-  return { rootId, map: DOM_HASH_MAP };
+  return debugMode ? { rootId, map: DOM_HASH_MAP, perfMetrics: buildPerfMetrics() } : { rootId, map: DOM_HASH_MAP };
 };

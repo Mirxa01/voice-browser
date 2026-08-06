@@ -192,7 +192,7 @@ export const FirewallSettings = ({ isDarkMode }: FirewallSettingsProps) => {
                       className={`rounded-l-none px-2 py-1 text-xs ${
                         isDarkMode ? 'bg-red-600 text-white hover:bg-red-700' : 'bg-red-500 text-white hover:bg-red-600'
                       }`}>
-                      Remove
+                      {t('options_firewall_btnRemove')}
                     </Button>
                   </li>
                 ))}

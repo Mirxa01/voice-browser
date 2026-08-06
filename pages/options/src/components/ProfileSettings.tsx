@@ -256,7 +256,7 @@ export const ProfileSettings = ({ isDarkMode = false }: ProfileSettingsProps) =>
                 <div className="flex-1">
                   <div className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{cred.site}</div>
                   <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>{cred.username}</div>
-                  <div className={`text-sm font-mono ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <div className={`font-mono text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     {visiblePasswords.has(cred.id) ? cred.password : '••••••••'}
                   </div>
                 </div>

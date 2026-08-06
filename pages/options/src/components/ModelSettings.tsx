@@ -201,7 +201,7 @@ export const ModelSettings = ({ isDarkMode = false }: ModelSettingsProps) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (isProviderSelectorOpen && !target.closest('.provider-selector-container')) {
+      if (isProviderSelectorOpen && !target.closest('[data-provider-selector]')) {
         setIsProviderSelectorOpen(false);
       }
     };
@@ -1558,7 +1558,7 @@ export const ModelSettings = ({ isDarkMode = false }: ModelSettingsProps) => {
           )}
 
           {/* Add Provider button and dropdown */}
-          <div className="provider-selector-container relative pt-4">
+          <div data-provider-selector className="relative pt-4">
             <Button
               variant="secondary"
               onClick={() => setIsProviderSelectorOpen(prev => !prev)}
