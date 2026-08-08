@@ -23,6 +23,10 @@
       "cache": false
     },
     "type-check": {
+      "dependsOn": ["^ready"],
+      "cache": false
+    },
+    "test": {
       "cache": false
     },
     "lint": {

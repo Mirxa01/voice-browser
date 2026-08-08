@@ -11,6 +11,25 @@ import { ChatDeepSeek } from '@langchain/deepseek';
 
 const maxTokens = 1024 * 4;
 
+/** A single usage metric entry returned by the Llama API. */
+interface LlamaMetric {
+  metric?: string;
+  value?: number;
+}
+
+/**
+ * Reads a numeric usage metric from a Llama API `metrics` array.
+ *
+ * @param metrics Raw metrics array from the Llama API response, if present
+ * @param name Name of the metric to look up
+ * @returns The metric value, or 0 when it is missing or malformed
+ */
+function findMetricValue(metrics: unknown, name: string): number {
+  if (!Array.isArray(metrics)) return 0;
+  const match = (metrics as LlamaMetric[]).find(entry => entry?.metric === name);
+  return typeof match?.value === 'number' ? match.value : 0;
+}
+
 // Custom ChatLlama class to handle Llama API response format
 class ChatLlama extends ChatOpenAI {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,9 +64,9 @@ class ChatLlama extends ChatOpenAI {
             },
           ],
           usage: {
-            prompt_tokens: response.metrics?.find((m: any) => m.metric === 'num_prompt_tokens')?.value || 0,
-            completion_tokens: response.metrics?.find((m: any) => m.metric === 'num_completion_tokens')?.value || 0,
-            total_tokens: response.metrics?.find((m: any) => m.metric === 'num_total_tokens')?.value || 0,
+            prompt_tokens: findMetricValue(response.metrics, 'num_prompt_tokens'),
+            completion_tokens: findMetricValue(response.metrics, 'num_completion_tokens'),
+            total_tokens: findMetricValue(response.metrics, 'num_total_tokens'),
           },
         };
 
@@ -55,7 +74,7 @@ class ChatLlama extends ChatOpenAI {
       }
 
       return response;
-    } catch (error: any) {
+    } catch (error) {
       console.error(`[ChatLlama] Error during API call:`, error);
       throw error;
     }
@@ -263,13 +282,17 @@ export function createChatModel(providerConfig: ProviderConfig, modelConfig: Mod
       return createOpenAIChatModel(providerConfig, modelConfig, undefined);
     }
     case ProviderTypeEnum.Anthropic: {
-      // For Opus models, only support temperature, not topP
-      // For 4.5 models, only support either temperature or topP, not both, so we only use temperature to align with Opus
+      // Opus models only support temperature, not topP.
+      // Claude 4.5 models accept either temperature or topP but not both, so we
+      // align them with Opus and send temperature only. Every other Anthropic
+      // model supports both parameters.
+      const supportsTopP = !isAnthropicOpusModel(modelConfig.modelName) && !isAnthropic4_5Model(modelConfig.modelName);
       const args = {
         model: modelConfig.modelName,
         apiKey: providerConfig.apiKey,
         maxTokens,
         temperature,
+        ...(supportsTopP ? { topP } : {}),
         clientOptions: {},
       };
       return new ChatAnthropic(args);

@@ -54,10 +54,13 @@ export const VoiceSettingsComponent = ({ isDarkMode = false }: VoiceSettingsProp
     };
   }, []);
 
-  const handleSettingChange = useCallback(async (key: keyof VoiceSettings, value: VoiceSettings[keyof VoiceSettings]) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
-    setIsSaved(false);
-  }, []);
+  const handleSettingChange = useCallback(
+    async (key: keyof VoiceSettings, value: VoiceSettings[keyof VoiceSettings]) => {
+      setSettings(prev => ({ ...prev, [key]: value }));
+      setIsSaved(false);
+    },
+    [],
+  );
 
   const handleSave = async () => {
     try {
@@ -101,42 +104,55 @@ export const VoiceSettingsComponent = ({ isDarkMode = false }: VoiceSettingsProp
           {/* Enable TTS Toggle */}
           <div className="flex items-center justify-between">
             <div>
-              <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 {t('options_voice_tts_enabled')}
-              </label>
+              </h3>
               <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                 {t('options_voice_tts_enabled_desc')}
               </p>
             </div>
-            <label className="relative inline-flex cursor-pointer items-center">
+            <div className="relative inline-flex cursor-pointer items-center">
               <input
+                id="voice-tts-enabled"
                 type="checkbox"
                 checked={settings.ttsEnabled}
                 onChange={e => handleSettingChange('ttsEnabled', e.target.checked)}
                 className="peer sr-only"
               />
-              <div className="peer h-6 w-11 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-blue-300"></div>
-            </label>
+              <label
+                htmlFor="voice-tts-enabled"
+                className="peer h-6 w-11 cursor-pointer rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-blue-300">
+                <span className="sr-only">{t('options_voice_tts_enabled')}</span>
+              </label>
+            </div>
           </div>
 
           {/* Voice Selection */}
           {settings.ttsEnabled && (
             <>
               <div className="flex items-center">
-                <label className={`w-24 text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <label
+                  htmlFor="voice-tts-voice"
+                  className={`w-24 text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                   {t('options_voice_tts_voice')}
                 </label>
-                <select
-                  value={settings.ttsVoice}
-                  onChange={e => handleSettingChange('ttsVoice', e.target.value)}
-                  className={`flex-1 rounded-md border text-sm ${isDarkMode ? 'border-slate-600 bg-slate-700 text-gray-200' : 'border-gray-300 bg-white text-gray-700'} px-3 py-2`}>
-                  <option value="">System Default</option>
-                  {availableVoices.map(voice => (
-                    <option key={voice.name} value={voice.name}>
-                      {voice.name} ({voice.lang})
-                    </option>
-                  ))}
-                </select>
+                <div className="flex-1">
+                  <select
+                    id="voice-tts-voice"
+                    value={settings.ttsVoice}
+                    onChange={e => handleSettingChange('ttsVoice', e.target.value)}
+                    className={`w-full rounded-md border text-sm ${isDarkMode ? 'border-slate-600 bg-slate-700 text-gray-200' : 'border-gray-300 bg-white text-gray-700'} px-3 py-2`}>
+                    <option value="">{t('options_voice_tts_voice_systemDefault')}</option>
+                    {availableVoices.map(voice => (
+                      <option key={voice.name} value={voice.name}>
+                        {voice.name} ({voice.lang})
+                      </option>
+                    ))}
+                  </select>
+                  <p className={`mt-1 text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    {t('options_voice_tts_voice_desc')}
+                  </p>
+                </div>
               </div>
 
               {/* Speech Rate */}
@@ -222,22 +238,27 @@ export const VoiceSettingsComponent = ({ isDarkMode = false }: VoiceSettingsProp
           {/* Enable Live Voice Toggle */}
           <div className="flex items-center justify-between">
             <div>
-              <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 {t('options_voice_live_enabled')}
-              </label>
+              </h3>
               <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                 {t('options_voice_live_enabled_desc')}
               </p>
             </div>
-            <label className="relative inline-flex cursor-pointer items-center">
+            <div className="relative inline-flex cursor-pointer items-center">
               <input
+                id="voice-live-enabled"
                 type="checkbox"
                 checked={settings.liveVoiceEnabled}
                 onChange={e => handleSettingChange('liveVoiceEnabled', e.target.checked)}
                 className="peer sr-only"
               />
-              <div className="peer h-6 w-11 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-blue-300"></div>
-            </label>
+              <label
+                htmlFor="voice-live-enabled"
+                className="peer h-6 w-11 cursor-pointer rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-blue-300">
+                <span className="sr-only">{t('options_voice_live_enabled')}</span>
+              </label>
+            </div>
           </div>
 
           {/* Wake Word */}

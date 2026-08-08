@@ -394,6 +394,24 @@
   "options_models_providers_ollama_learnMore": {
     "message": "Learn more"
   },
+  "options_models_providers_fetchModels_btn": {
+    "message": "Fetch Models"
+  },
+  "options_models_providers_fetchModels_loading": {
+    "message": "Fetching…"
+  },
+  "options_models_providers_fetchModels_empty": {
+    "message": "No models returned by the provider."
+  },
+  "options_models_providers_fetchModels_error": {
+    "message": "Failed to fetch models: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "HTTP 401"
+      }
+    }
+  },
   "options_models_providers_errors_spacesNotAllowed": {
     "message": "Spaces are not allowed in provider names. Please use underscores or other characters instead."
   },
@@ -428,7 +446,7 @@
     "message": "No domains in deny list"
   },
   "options_firewall_placeholders_domainUrl": {
-    "message": "Enter domain or URL (e.g. example.com, localhost, 127.0.0.1)"
+    "message": "Enter domain, URL or wildcard (e.g. example.com, *.example.com, example.com/admin/*)"
   },
   "options_firewall_btnAdd": {
     "message": "Add"
@@ -440,7 +458,7 @@
     "message": "How the Firewall Works"
   },
   "options_firewall_howItWorks": {
-    "message": "The firewall contains a deny list and an allow list.\nIf both lists are empty, all URLs are allowed\nDeny list takes priority - if a URL matches any deny list entry, it's blocked\nWhen allow list is empty, all non-denied URLs are allowed\nWhen allow list is not empty, only matching URLs are allowed\nWildcards are NOT supported yet\nAllow list is preferred over deny list"
+    "message": "The firewall contains a deny list and an allow list.\nIf both lists are empty, all URLs are allowed\nDeny list takes priority - if a URL matches any deny list entry, it's blocked\nWhen allow list is empty, all non-denied URLs are allowed\nWhen allow list is not empty, only matching URLs are allowed\nAn entry without a wildcard matches the domain and all of its subdomains\nUse * as a wildcard, e.g. *.example.com matches every subdomain, example.com/admin/* matches a path\nAllow list is preferred over deny list"
   },
   "bg_errors_noTabId": {
     "message": "No tab ID provided"
@@ -963,20 +981,8 @@
   "voice_tts_enabled": {
     "message": "Voice feedback enabled"
   },
-  "voice_tts_disabled": {
-    "message": "Voice feedback disabled"
-  },
-  "voice_tts_speaking": {
-    "message": "Speaking..."
-  },
-  "voice_tts_stopped": {
-    "message": "Stopped speaking"
-  },
   "voice_live_mode_enabled": {
     "message": "Live voice mode enabled - listening for commands"
-  },
-  "voice_live_mode_disabled": {
-    "message": "Live voice mode disabled"
   },
   "voice_command_received": {
     "message": "Command received: $COMMAND$",
@@ -1067,9 +1073,6 @@
   },
   "options_profile_saved": {
     "message": "Profile saved successfully"
-  },
-  "options_voice_header": {
-    "message": "Voice Settings"
   },
   "options_voice_tts_header": {
     "message": "Text-to-Speech"
@@ -1217,5 +1220,65 @@
   },
   "voice_live_listening": {
     "message": "Listening..."
+  },
+  "options_tabs_analytics": {
+    "message": "Analytics"
+  },
+  "options_tabs_memory": {
+    "message": "Memory"
+  },
+  "options_analytics_header": {
+    "message": "Analytics Settings"
+  },
+  "options_analytics_loadFailed": {
+    "message": "Failed to load analytics settings."
+  },
+  "options_analytics_enableToggle": {
+    "message": "Help improve Mirza Browser"
+  },
+  "options_analytics_toggleAnalytics_a11y": {
+    "message": "Toggle analytics"
+  },
+  "options_analytics_enableToggle_desc": {
+    "message": "Share anonymous usage data to help us improve the extension"
+  },
+  "options_analytics_collect_header": {
+    "message": "What we collect:"
+  },
+  "options_analytics_collect_metrics": {
+    "message": "Task execution metrics (start, completion, failure counts and duration)"
+  },
+  "options_analytics_collect_domains": {
+    "message": "Domain names of websites visited (e.g., \"amazon.com\", not full URLs)"
+  },
+  "options_analytics_collect_errors": {
+    "message": "Error categories for failed tasks (no sensitive details)"
+  },
+  "options_analytics_collect_usage": {
+    "message": "Anonymous usage statistics"
+  },
+  "options_analytics_notCollect_header": {
+    "message": "What we DON'T collect:"
+  },
+  "options_analytics_notCollect_personal": {
+    "message": "Personal information or login credentials"
+  },
+  "options_analytics_notCollect_urls": {
+    "message": "Full URLs or page content"
+  },
+  "options_analytics_notCollect_prompts": {
+    "message": "Task instructions or user prompts"
+  },
+  "options_analytics_notCollect_screenshots": {
+    "message": "Screen recordings or screenshots"
+  },
+  "options_analytics_notCollect_sensitive": {
+    "message": "Any sensitive or private data"
+  },
+  "options_analytics_disabledNotice": {
+    "message": "Analytics disabled. You can re-enable it anytime to help improve Mirza Browser."
+  },
+  "options_voice_tts_voice_systemDefault": {
+    "message": "System Default"
   }
 }

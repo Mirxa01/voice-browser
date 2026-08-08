@@ -18,6 +18,7 @@ import { DEFAULT_AGENT_OPTIONS } from './agent/types';
 import { SpeechToTextService } from './services/speechToText';
 import { injectBuildDomTreeScripts } from './browser/dom/service';
 import { analytics } from './services/analytics';
+import { recallLearnedPatterns } from './services/memory';
 
 const logger = createLogger('background');
 
@@ -69,13 +70,6 @@ analyticsSettingsStore.subscribe(() => {
   });
 });
 
-// Listen for simple messages (e.g., from options page)
-chrome.runtime.onMessage.addListener(() => {
-  // Handle other message types if needed in the future
-  // Return false if response is not sent asynchronously
-  // return false;
-});
-
 // Setup connection listener for long-lived connections (e.g., side panel)
 chrome.runtime.onConnect.addListener(port => {
   if (port.name === 'side-panel-connection') {
@@ -103,7 +97,7 @@ chrome.runtime.onConnect.addListener(port => {
             if (!message.tabId) return port.postMessage({ type: 'error', error: t('bg_errors_noTabId') });
 
             logger.info('new_task', message.tabId, message.task);
-            currentExecutor = await setupExecutor(message.taskId, message.task, browserContext);
+            currentExecutor = await setupExecutor(message.taskId, message.task, browserContext, message.tabId);
             subscribeToExecutorEvents(currentExecutor);
 
             const result = await currentExecutor.execute();
@@ -268,7 +262,7 @@ chrome.runtime.onConnect.addListener(port => {
   }
 });
 
-async function setupExecutor(taskId: string, task: string, browserContext: BrowserContext) {
+async function setupExecutor(taskId: string, task: string, browserContext: BrowserContext, tabId?: number) {
   const providers = await llmProviderStore.getAllProviders();
   // if no providers, need to display the options page
   if (Object.keys(providers).length === 0) {
@@ -322,6 +316,10 @@ async function setupExecutor(taskId: string, task: string, browserContext: Brows
     displayHighlights: generalSettings.displayHighlights,
   });
 
+  // Recall patterns learned from previous successful tasks on the same site/task type
+  const startingUrl = await getTabUrl(tabId);
+  const recalledMemory = await recallLearnedPatterns(task, startingUrl);
+
   const executor = new Executor(task, taskId, browserContext, navigatorLLM, {
     plannerLLM: plannerLLM ?? navigatorLLM,
     agentOptions: {
@@ -333,9 +331,28 @@ async function setupExecutor(taskId: string, task: string, browserContext: Brows
       planningInterval: generalSettings.planningInterval,
     },
     generalSettings: generalSettings,
+    memoryContext: recalledMemory.context,
+    memoryPatternIds: recalledMemory.patternIds,
   });
 
   return executor;
+}
+
+/**
+ * Reads the URL of a tab without attaching the debugger to it.
+ *
+ * @param tabId The tab to inspect
+ * @returns The tab URL, or undefined when it cannot be resolved
+ */
+async function getTabUrl(tabId?: number): Promise<string | undefined> {
+  if (typeof tabId !== 'number') return undefined;
+  try {
+    const tab = await chrome.tabs.get(tabId);
+    return tab.url ?? undefined;
+  } catch (error) {
+    logger.warning('Could not read the URL of the active tab:', error);
+    return undefined;
+  }
 }
 
 // Update subscribeToExecutorEvents to use port

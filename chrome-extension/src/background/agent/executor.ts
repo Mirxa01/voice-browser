@@ -21,10 +21,11 @@ import {
   MaxFailuresReachedError,
 } from './agents/errors';
 import { URLNotAllowedError } from '../browser/views';
-import { chatHistoryStore, memoryStore } from '@extension/storage';
+import { chatHistoryStore } from '@extension/storage';
 import type { AgentStepHistory } from './history';
 import type { GeneralSettingsConfig } from '@extension/storage';
 import { analytics } from '../services/analytics';
+import { rememberSuccessfulTask } from '../services/memory';
 
 const logger = createLogger('Executor');
 
@@ -33,6 +34,10 @@ export interface ExecutorExtraArgs {
   extractorLLM?: BaseChatModel;
   agentOptions?: Partial<AgentOptions>;
   generalSettings?: GeneralSettingsConfig;
+  /** Prompt fragment describing patterns learned from previous successful tasks. */
+  memoryContext?: string;
+  /** Ids of the learned patterns behind `memoryContext`, reinforced when the task succeeds. */
+  memoryPatternIds?: string[];
 }
 
 export class Executor {
@@ -42,6 +47,7 @@ export class Executor {
   private readonly plannerPrompt: PlannerPrompt;
   private readonly navigatorPrompt: NavigatorPrompt;
   private readonly generalSettings: GeneralSettingsConfig | undefined;
+  private readonly memoryPatternIds: string[];
   private tasks: string[] = [];
   constructor(
     task: string,
@@ -64,6 +70,7 @@ export class Executor {
     );
 
     this.generalSettings = extraArgs?.generalSettings;
+    this.memoryPatternIds = extraArgs?.memoryPatternIds ?? [];
     this.tasks.push(task);
     this.navigatorPrompt = new NavigatorPrompt(context.options.maxActionsPerStep);
     this.plannerPrompt = new PlannerPrompt();
@@ -86,7 +93,11 @@ export class Executor {
 
     this.context = context;
     // Initialize message history
-    this.context.messageManager.initTaskMessages(this.navigatorPrompt.getSystemMessage(), task);
+    this.context.messageManager.initTaskMessages(
+      this.navigatorPrompt.getSystemMessage(),
+      task,
+      extraArgs?.memoryContext,
+    );
   }
 
   subscribeExecutionEvents(callback: EventCallback): void {
@@ -236,59 +247,19 @@ export class Executor {
    * Store learned pattern from successful task execution
    */
   private async storeLearnedPattern(): Promise<void> {
+    let currentUrl: string | undefined;
     try {
-      // Check if memory/learning is enabled
-      const isEnabled = await memoryStore.isEnabled();
-      if (!isEnabled) {
-        logger.info('Memory learning is disabled, skipping pattern storage');
-        return;
-      }
-
-      // Get current URL domain
-      const browserState = await this.context.browserContext.getState();
-      const currentUrl = browserState?.url || '';
-      let domain = '';
-      try {
-        domain = new URL(currentUrl).hostname;
-      } catch {
-        domain = 'unknown';
-      }
-
-      // Extract task type from the task description
-      const task = this.tasks[0] || '';
-      const taskType = this.categorizeTask(task);
-
-      // Create a pattern from the successful execution
-      const actionSequence = this.context.actionResults
-        .filter(r => r.includeInMemory)
-        .map(r => r.extractedContent || '');
-
-      await memoryStore.addPattern({
-        taskType,
-        domain,
-        description: task.substring(0, 200),
-        actionSequence,
-        lastUsed: Date.now(),
-      });
-
-      logger.info(`Stored learned pattern for task type: ${taskType} on domain: ${domain}`);
+      currentUrl = (await this.context.browserContext.getCachedState()).url;
     } catch (error) {
-      logger.error('Failed to store learned pattern:', error);
+      logger.warning('Could not resolve the current URL for pattern storage:', error);
     }
-  }
 
-  /**
-   * Categorize task type from description
-   */
-  private categorizeTask(task: string): string {
-    const taskLower = task.toLowerCase();
-    if (taskLower.includes('search') || taskLower.includes('find')) return 'search';
-    if (taskLower.includes('fill') || taskLower.includes('form')) return 'form-fill';
-    if (taskLower.includes('login') || taskLower.includes('sign in')) return 'login';
-    if (taskLower.includes('click') || taskLower.includes('navigate')) return 'navigation';
-    if (taskLower.includes('extract') || taskLower.includes('scrape') || taskLower.includes('get')) return 'extraction';
-    if (taskLower.includes('buy') || taskLower.includes('purchase') || taskLower.includes('order')) return 'purchase';
-    return 'general';
+    await rememberSuccessfulTask({
+      task: this.tasks[this.tasks.length - 1] ?? '',
+      url: currentUrl,
+      steps: this.context.actionResults.filter(r => r.includeInMemory).map(r => r.extractedContent ?? ''),
+      reinforcedPatternIds: this.memoryPatternIds,
+    });
   }
 
   /**

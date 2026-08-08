@@ -53,6 +53,9 @@ interface SpeechRecognitionErrorEv extends Event {
   readonly message: string;
 }
 
+// How long to wait after the user stops speaking before submitting a live voice command
+const LIVE_VOICE_SILENCE_TIMEOUT_MS = 3000;
+
 // Text-to-Speech helper for voice feedback
 const speakText = async (text: string) => {
   try {
@@ -236,6 +239,34 @@ const SidePanel = () => {
           if (!cancelled) setIsLiveVoiceActive(true);
         };
 
+        // Cancels a pending silence timeout, if any.
+        const clearPendingSubmit = () => {
+          if (liveVoiceTimeoutRef.current) {
+            window.clearTimeout(liveVoiceTimeoutRef.current);
+            liveVoiceTimeoutRef.current = null;
+          }
+        };
+
+        // Dispatches a captured voice command and resets the live voice state.
+        const submitVoiceCommand = (rawCommand: string) => {
+          clearPendingSubmit();
+          const command = rawCommand.trim();
+          setAwake(false);
+          liveVoiceCommandBufferRef.current = '';
+          if (!command || !handleSendMessageRef.current) return;
+          speakText(t('voice_command_received', [command]));
+          handleSendMessageRef.current(command);
+        };
+
+        // Submits whatever has been captured once the user stops speaking.
+        const scheduleVoiceCommandSubmit = () => {
+          clearPendingSubmit();
+          liveVoiceTimeoutRef.current = window.setTimeout(() => {
+            liveVoiceTimeoutRef.current = null;
+            submitVoiceCommand(liveVoiceCommandBufferRef.current);
+          }, LIVE_VOICE_SILENCE_TIMEOUT_MS);
+        };
+
         recognition.onresult = (event: SpeechRecognitionResultEvent) => {
           if (cancelled) return;
 
@@ -246,69 +277,32 @@ const SidePanel = () => {
 
           if (!liveVoiceAwakeRef.current) {
             // Listening for wake word
-            if (transcript.includes(liveVoiceWakeWordRef.current)) {
-              // Extract command after wake word
-              const wakeWordIndex = transcript.indexOf(liveVoiceWakeWordRef.current);
-              const afterWakeWord = transcript.substring(wakeWordIndex + liveVoiceWakeWordRef.current.length).trim();
+            if (!transcript.includes(liveVoiceWakeWordRef.current)) return;
 
-              setAwake(true);
-              speakText(t('voice_live_listening'));
-              liveVoiceCommandBufferRef.current = afterWakeWord;
+            // Extract command after wake word
+            const wakeWordIndex = transcript.indexOf(liveVoiceWakeWordRef.current);
+            const afterWakeWord = transcript.substring(wakeWordIndex + liveVoiceWakeWordRef.current.length).trim();
 
-              // Clear any existing timeout
-              if (liveVoiceTimeoutRef.current) {
-                window.clearTimeout(liveVoiceTimeoutRef.current);
-              }
+            setAwake(true);
+            speakText(t('voice_live_listening'));
+            liveVoiceCommandBufferRef.current = afterWakeWord;
 
-              // If the result is final and has content after wake word, submit immediately
-              if (result.isFinal && afterWakeWord.length > 0) {
-                const command = afterWakeWord;
-                setAwake(false);
-                liveVoiceCommandBufferRef.current = '';
-                if (handleSendMessageRef.current) {
-                  handleSendMessageRef.current(command);
-                }
-              } else {
-                // Set timeout to submit command after silence
-                liveVoiceTimeoutRef.current = window.setTimeout(() => {
-                  const command = liveVoiceCommandBufferRef.current.trim();
-                  setAwake(false);
-                  liveVoiceCommandBufferRef.current = '';
-                  if (command && handleSendMessageRef.current) {
-                    handleSendMessageRef.current(command);
-                  }
-                }, 3000);
-              }
-            }
-          } else {
-            // Already awake - accumulating command
-            const fullTranscript = result[0].transcript.trim();
-            liveVoiceCommandBufferRef.current = fullTranscript;
-
-            // Reset the silence timeout
-            if (liveVoiceTimeoutRef.current) {
-              window.clearTimeout(liveVoiceTimeoutRef.current);
-            }
-
-            if (result.isFinal) {
-              // Final result - submit the command
-              const command = fullTranscript;
-              setAwake(false);
-              liveVoiceCommandBufferRef.current = '';
-              if (command && handleSendMessageRef.current) {
-                handleSendMessageRef.current(command);
-              }
+            // If the result is final and has content after wake word, submit immediately
+            if (result.isFinal && afterWakeWord.length > 0) {
+              submitVoiceCommand(afterWakeWord);
             } else {
-              // Set timeout to submit command after silence
-              liveVoiceTimeoutRef.current = window.setTimeout(() => {
-                const command = liveVoiceCommandBufferRef.current.trim();
-                setAwake(false);
-                liveVoiceCommandBufferRef.current = '';
-                if (command && handleSendMessageRef.current) {
-                  handleSendMessageRef.current(command);
-                }
-              }, 3000);
+              scheduleVoiceCommandSubmit();
             }
+            return;
+          }
+
+          // Already awake - accumulating command
+          liveVoiceCommandBufferRef.current = result[0].transcript.trim();
+
+          if (result.isFinal) {
+            submitVoiceCommand(liveVoiceCommandBufferRef.current);
+          } else {
+            scheduleVoiceCommandSubmit();
           }
         };
 

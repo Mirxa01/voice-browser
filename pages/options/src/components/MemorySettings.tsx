@@ -15,6 +15,7 @@ export const MemorySettingsComponent = ({ isDarkMode = false }: MemorySettingsPr
   const [stats, setStats] = useState({ patternCount: 0, preferenceCount: 0 });
   const [isSaved, setIsSaved] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [isCleared, setIsCleared] = useState(false);
 
   // Load settings on mount
   useEffect(() => {
@@ -51,10 +52,18 @@ export const MemorySettingsComponent = ({ isDarkMode = false }: MemorySettingsPr
       await memoryStore.clearMemory();
       setStats({ patternCount: 0, preferenceCount: 0 });
       setShowClearConfirm(false);
+      setIsCleared(true);
     } catch (error) {
       console.error('Error clearing memory:', error);
     }
   };
+
+  // Hide the "memory cleared" confirmation after a short delay
+  useEffect(() => {
+    if (!isCleared) return undefined;
+    const timeoutId = window.setTimeout(() => setIsCleared(false), 3000);
+    return () => window.clearTimeout(timeoutId);
+  }, [isCleared]);
 
   return (
     <section className="space-y-6">
@@ -69,22 +78,27 @@ export const MemorySettingsComponent = ({ isDarkMode = false }: MemorySettingsPr
           {/* Enable Learning Toggle */}
           <div className="flex items-center justify-between">
             <div>
-              <label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
                 {t('options_memory_enabled')}
-              </label>
+              </h3>
               <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                 {t('options_memory_enabled_desc')}
               </p>
             </div>
-            <label className="relative inline-flex cursor-pointer items-center">
+            <div className="relative inline-flex cursor-pointer items-center">
               <input
+                id="memory-enabled"
                 type="checkbox"
                 checked={settings.enabled}
                 onChange={e => handleSettingChange('enabled', e.target.checked)}
                 className="peer sr-only"
               />
-              <div className="peer h-6 w-11 rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-blue-300"></div>
-            </label>
+              <label
+                htmlFor="memory-enabled"
+                className="peer h-6 w-11 cursor-pointer rounded-full bg-gray-300 after:absolute after:left-[2px] after:top-[2px] after:size-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-500 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-blue-300">
+                <span className="sr-only">{t('options_memory_enabled')}</span>
+              </label>
+            </div>
           </div>
 
           {/* Memory Stats */}
@@ -100,6 +114,11 @@ export const MemorySettingsComponent = ({ isDarkMode = false }: MemorySettingsPr
           )}
 
           {/* Clear Memory Button */}
+          {settings.enabled && isCleared && (
+            <p className={`text-sm ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>
+              {t('options_memory_cleared')}
+            </p>
+          )}
           {settings.enabled && stats.patternCount > 0 && (
             <div>
               {showClearConfirm ? (

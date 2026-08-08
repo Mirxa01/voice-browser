@@ -1,4 +1,81 @@
 /**
+ * Matches a value against a glob pattern where `*` matches any (possibly empty)
+ * sequence of characters.
+ *
+ * Implemented with a linear two-pointer scan rather than a compiled `RegExp` so
+ * that user supplied patterns such as `*a*a*a*a*b` cannot trigger catastrophic
+ * backtracking.
+ *
+ * @param pattern The glob pattern, already normalized to lower case
+ * @param value The value to test, already normalized to lower case
+ * @returns True when the whole value is matched by the pattern
+ */
+export function matchesWildcardPattern(pattern: string, value: string): boolean {
+  let patternIndex = 0;
+  let valueIndex = 0;
+  let lastStarIndex = -1;
+  let lastMatchIndex = 0;
+
+  while (valueIndex < value.length) {
+    if (patternIndex < pattern.length && pattern[patternIndex] === value[valueIndex]) {
+      patternIndex++;
+      valueIndex++;
+    } else if (patternIndex < pattern.length && pattern[patternIndex] === '*') {
+      lastStarIndex = patternIndex;
+      lastMatchIndex = valueIndex;
+      patternIndex++;
+    } else if (lastStarIndex !== -1) {
+      // Backtrack to the most recent `*` and let it consume one more character
+      patternIndex = lastStarIndex + 1;
+      lastMatchIndex++;
+      valueIndex = lastMatchIndex;
+    } else {
+      return false;
+    }
+  }
+
+  // Any trailing `*` in the pattern can match the empty string
+  while (patternIndex < pattern.length && pattern[patternIndex] === '*') {
+    patternIndex++;
+  }
+
+  return patternIndex === pattern.length;
+}
+
+/**
+ * Checks whether a single firewall entry matches the given URL.
+ *
+ * Entries without a wildcard keep the historical semantics:
+ *  - an exact match on the URL with the protocol stripped, or
+ *  - a domain match, which also covers every subdomain of that domain.
+ *
+ * Entries containing `*` are treated as glob patterns and are matched against
+ * both the protocol-less URL and the bare domain, so `*.example.com` matches
+ * `https://app.example.com/path` while `example.com/admin/*` only matches that
+ * path prefix.
+ *
+ * @param entry The normalized firewall list entry
+ * @param urlWithoutProtocol The lower case URL with the `http(s)://` prefix removed
+ * @param domain The lower case hostname of the URL
+ * @returns True if the entry matches the URL
+ */
+function matchesFirewallEntry(entry: string, urlWithoutProtocol: string, domain: string): boolean {
+  if (entry.length === 0) {
+    return false;
+  }
+
+  if (entry.includes('*')) {
+    return matchesWildcardPattern(entry, urlWithoutProtocol) || matchesWildcardPattern(entry, domain);
+  }
+
+  if (urlWithoutProtocol === entry) {
+    return true;
+  }
+
+  return domain === entry || domain.endsWith(`.${entry}`);
+}
+
+/**
  * Checks if a URL is allowed based on firewall configuration
  * @param url The URL to check
  * @param allowList The allow list
@@ -47,46 +124,27 @@ export function isUrlAllowed(url: string, allowList: string[], denyList: string[
     // 1. Remove protocol prefix for further comparisons
     const urlWithoutProtocol = lowerCaseUrl.replace(/^https?:\/\//, '');
 
-    // 2. First check full URL against deny list
+    // 2. Extract domain for domain-based checks.
+    //    `URL.hostname` never contains the port; IPv6 hosts are bracketed, so strip them.
+    const domain = parsedUrl.hostname.toLowerCase().replace(/^\[(.*)\]$/, '$1');
+
+    // 3. Deny list takes priority over the allow list
     for (const deniedEntry of denyList) {
-      if (urlWithoutProtocol === deniedEntry) {
+      if (matchesFirewallEntry(deniedEntry, urlWithoutProtocol, domain)) {
         return false;
       }
     }
 
-    // 3. Check full URL against allow list
+    // 4. Check the allow list
     for (const allowedEntry of allowList) {
-      if (urlWithoutProtocol === allowedEntry) {
-        return true;
-      }
-    }
-
-    // 4. Extract domain for domain-based checks
-    let domain = parsedUrl.hostname.toLowerCase();
-
-    // Remove port number if present
-    const portIndex = domain.indexOf(':');
-    if (portIndex > -1) {
-      domain = domain.substring(0, portIndex);
-    }
-
-    // 5. Check domain against deny list
-    for (const deniedEntry of denyList) {
-      if (domain === deniedEntry || domain.endsWith(`.${deniedEntry}`)) {
-        return false;
-      }
-    }
-
-    // 6. Check domain against allow list
-    for (const allowedEntry of allowList) {
-      if (domain === allowedEntry || domain.endsWith(`.${allowedEntry}`)) {
+      if (matchesFirewallEntry(allowedEntry, urlWithoutProtocol, domain)) {
         return true;
       }
     }
 
     // Default policy
     return allowList.length === 0;
-  } catch (error) {
+  } catch {
     // Invalid URL format - deny by default
     return false;
   }

@@ -83,6 +83,9 @@ export const ModelSettings = ({ isDarkMode = false }: ModelSettingsProps) => {
   const [nameErrors, setNameErrors] = useState<Record<string, string>>({});
   // Add state for tracking API key visibility
   const [visibleApiKeys, setVisibleApiKeys] = useState<Record<string, boolean>>({});
+  // State for auto-fetching available models from provider APIs
+  const [fetchingModels, setFetchingModels] = useState<Record<string, boolean>>({});
+  const [fetchModelErrors, setFetchModelErrors] = useState<Record<string, string>>({});
   // Create a non-async wrapper for use in render functions
   const [availableModels, setAvailableModels] = useState<
     Array<{ provider: string; providerName: string; model: string }>
@@ -201,7 +204,7 @@ export const ModelSettings = ({ isDarkMode = false }: ModelSettingsProps) => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
-      if (isProviderSelectorOpen && !target.closest('.provider-selector-container')) {
+      if (isProviderSelectorOpen && !target.closest('[data-provider-selector]')) {
         setIsProviderSelectorOpen(false);
       }
     };
@@ -366,6 +369,190 @@ export const ModelSettings = ({ isDarkMode = false }: ModelSettingsProps) => {
         },
       };
     });
+  };
+
+  // Provider types that support auto-fetching their model list
+  const FETCH_MODELS_SUPPORTED = new Set<ProviderTypeEnum>([
+    ProviderTypeEnum.Ollama,
+    ProviderTypeEnum.OpenAI,
+    ProviderTypeEnum.DeepSeek,
+    ProviderTypeEnum.Gemini,
+    ProviderTypeEnum.Groq,
+    ProviderTypeEnum.Cerebras,
+    ProviderTypeEnum.OpenRouter,
+    ProviderTypeEnum.Llama,
+    ProviderTypeEnum.Grok,
+    ProviderTypeEnum.CustomOpenAI,
+  ]);
+
+  // Returns true if this provider type supports auto-fetching models
+  const canFetchModels = (providerType: ProviderTypeEnum): boolean => FETCH_MODELS_SUPPORTED.has(providerType);
+
+  // Returns true when the provider has enough config to attempt a fetch
+  const isFetchReady = (config: ProviderConfig): boolean => {
+    if (config.type === ProviderTypeEnum.Ollama) {
+      return Boolean(config.baseUrl?.trim());
+    }
+    if (config.type === ProviderTypeEnum.CustomOpenAI) {
+      return Boolean(config.baseUrl?.trim());
+    }
+    return Boolean(config.apiKey?.trim());
+  };
+
+  const fetchModelsForProvider = async (providerId: string) => {
+    const config = providers[providerId];
+    if (!config?.type) return;
+
+    setFetchingModels(prev => ({ ...prev, [providerId]: true }));
+    setFetchModelErrors(prev => {
+      const next = { ...prev };
+      delete next[providerId];
+      return next;
+    });
+
+    try {
+      let fetchedModels: string[] = [];
+
+      switch (config.type) {
+        case ProviderTypeEnum.Ollama: {
+          const base = (config.baseUrl || 'http://localhost:11434').replace(/\/$/, '');
+          const res = await fetch(`${base}/api/tags`);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = (await res.json()) as { models?: Array<{ name: string }> };
+          fetchedModels = (data.models || []).map(m => m.name).filter(Boolean);
+          break;
+        }
+
+        case ProviderTypeEnum.OpenAI: {
+          const res = await fetch('https://api.openai.com/v1/models', {
+            headers: { Authorization: 'Bearer ' + config.apiKey },
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = (await res.json()) as { data?: Array<{ id: string }> };
+          fetchedModels = (data.data || [])
+            .map(m => m.id)
+            .filter(id => /^(gpt-|o\d+|chatgpt-)/.test(id))
+            .sort();
+          break;
+        }
+
+        case ProviderTypeEnum.DeepSeek: {
+          const res = await fetch('https://api.deepseek.com/models', {
+            headers: { Authorization: 'Bearer ' + config.apiKey },
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = (await res.json()) as { data?: Array<{ id: string }> };
+          fetchedModels = (data.data || []).map(m => m.id).sort();
+          break;
+        }
+
+        case ProviderTypeEnum.Gemini: {
+          const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models', {
+            headers: { 'x-goog-api-key': config.apiKey },
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = (await res.json()) as { models?: Array<{ name: string; supportedGenerationMethods?: string[] }> };
+          fetchedModels = (data.models || [])
+            .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+            .map(m => m.name.replace(/^models\//, ''))
+            .sort();
+          break;
+        }
+
+        case ProviderTypeEnum.Grok: {
+          const res = await fetch('https://api.x.ai/v1/models', {
+            headers: { Authorization: 'Bearer ' + config.apiKey },
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = (await res.json()) as { data?: Array<{ id: string }> };
+          fetchedModels = (data.data || []).map(m => m.id).sort();
+          break;
+        }
+
+        case ProviderTypeEnum.Groq: {
+          const res = await fetch('https://api.groq.com/openai/v1/models', {
+            headers: { Authorization: 'Bearer ' + config.apiKey },
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = (await res.json()) as { data?: Array<{ id: string }> };
+          fetchedModels = (data.data || []).map(m => m.id).sort();
+          break;
+        }
+
+        case ProviderTypeEnum.Cerebras: {
+          const res = await fetch('https://api.cerebras.ai/v1/models', {
+            headers: { Authorization: 'Bearer ' + config.apiKey },
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = (await res.json()) as { data?: Array<{ id: string }> };
+          fetchedModels = (data.data || []).map(m => m.id).sort();
+          break;
+        }
+
+        case ProviderTypeEnum.OpenRouter: {
+          const res = await fetch('https://openrouter.ai/api/v1/models', {
+            headers: { Authorization: 'Bearer ' + config.apiKey },
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = (await res.json()) as { data?: Array<{ id: string }> };
+          fetchedModels = (data.data || []).map(m => m.id).sort();
+          break;
+        }
+
+        case ProviderTypeEnum.Llama: {
+          const base = (config.baseUrl || 'https://api.llama.com/v1').replace(/\/$/, '');
+          const res = await fetch(`${base}/models`, {
+            headers: { Authorization: 'Bearer ' + config.apiKey },
+          });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = (await res.json()) as { data?: Array<{ id: string }> };
+          fetchedModels = (data.data || []).map(m => m.id).sort();
+          break;
+        }
+
+        case ProviderTypeEnum.CustomOpenAI: {
+          const base = (config.baseUrl || '').replace(/\/$/, '');
+          const headers: Record<string, string> = {};
+          if (config.apiKey?.trim()) {
+            headers['Authorization'] = 'Bearer ' + config.apiKey;
+          }
+          const res = await fetch(`${base}/models`, { headers });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const data = (await res.json()) as { data?: Array<{ id: string }> };
+          fetchedModels = (data.data || []).map(m => m.id).sort();
+          break;
+        }
+
+        default:
+          break;
+      }
+
+      if (fetchedModels.length === 0) {
+        setFetchModelErrors(prev => ({
+          ...prev,
+          [providerId]: t('options_models_providers_fetchModels_empty'),
+        }));
+        return;
+      }
+
+      // Replace the current model list with fetched models
+      setModifiedProviders(prev => new Set(prev).add(providerId));
+      setProviders(prev => ({
+        ...prev,
+        [providerId]: {
+          ...prev[providerId],
+          modelNames: fetchedModels,
+        },
+      }));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setFetchModelErrors(prev => ({
+        ...prev,
+        [providerId]: t('options_models_providers_fetchModels_error', [msg]),
+      }));
+    } finally {
+      setFetchingModels(prev => ({ ...prev, [providerId]: false }));
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, provider: string) => {
@@ -1519,6 +1706,33 @@ export const ModelSettings = ({ isDarkMode = false }: ModelSettingsProps) => {
                             </>
                           )}
                           {/* === END: Conditional UI === */}
+                          {/* Fetch Models button — shown for supported provider types */}
+                          {canFetchModels(providerConfig.type) && (
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                disabled={fetchingModels[providerId] || !isFetchReady(providerConfig)}
+                                onClick={() => fetchModelsForProvider(providerId)}
+                                className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
+                                  fetchingModels[providerId] || !isFetchReady(providerConfig)
+                                    ? isDarkMode
+                                      ? 'cursor-not-allowed bg-slate-600 text-gray-400'
+                                      : 'cursor-not-allowed bg-gray-200 text-gray-400'
+                                    : isDarkMode
+                                      ? 'bg-teal-700 text-teal-100 hover:bg-teal-600'
+                                      : 'bg-teal-100 text-teal-800 hover:bg-teal-200'
+                                }`}>
+                                {fetchingModels[providerId]
+                                  ? t('options_models_providers_fetchModels_loading')
+                                  : t('options_models_providers_fetchModels_btn')}
+                              </button>
+                              {fetchModelErrors[providerId] && (
+                                <span className={`text-xs ${isDarkMode ? 'text-red-400' : 'text-red-500'}`}>
+                                  {fetchModelErrors[providerId]}
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -1558,7 +1772,7 @@ export const ModelSettings = ({ isDarkMode = false }: ModelSettingsProps) => {
           )}
 
           {/* Add Provider button and dropdown */}
-          <div className="provider-selector-container relative pt-4">
+          <div data-provider-selector className="relative pt-4">
             <Button
               variant="secondary"
               onClick={() => setIsProviderSelectorOpen(prev => !prev)}
