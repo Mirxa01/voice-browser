@@ -1627,7 +1627,7 @@ window.buildDomTree = (
   PERF.timings.buildDomTree = now() - buildStart;
   PERF.timings.total = PERF.timings.buildDomTree;
 
-  // Clear the cache before starting
+  // Release the per-run caches now that the tree (and its perf metrics) are built
   DOM_CACHE.clearCache();
 
   return debugMode ? { rootId, map: DOM_HASH_MAP, perfMetrics: buildPerfMetrics() } : { rootId, map: DOM_HASH_MAP };

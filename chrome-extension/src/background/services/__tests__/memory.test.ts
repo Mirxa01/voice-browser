@@ -371,6 +371,30 @@ describe('rememberSuccessfulTask', () => {
     expect(memoryStoreMock.updatePatternSuccess).toHaveBeenCalledWith('p2');
   });
 
+  it('does not reinforce the pattern that addPattern already counted', async () => {
+    memoryStoreMock.getPatterns.mockResolvedValue([
+      makePattern({ id: 'p1', taskType: 'search', domain: 'example.com', description: 'search the docs' }),
+    ]);
+    await rememberSuccessfulTask({
+      task: 'search the docs',
+      url: 'https://example.com',
+      steps: [],
+      reinforcedPatternIds: ['p1', 'p2'],
+    });
+    expect(memoryStoreMock.updatePatternSuccess).toHaveBeenCalledTimes(1);
+    expect(memoryStoreMock.updatePatternSuccess).toHaveBeenCalledWith('p2');
+  });
+
+  it('reinforces a repeated pattern id only once', async () => {
+    await rememberSuccessfulTask({
+      task: 'search the docs',
+      url: 'https://example.com',
+      steps: [],
+      reinforcedPatternIds: ['p1', 'p1'],
+    });
+    expect(memoryStoreMock.updatePatternSuccess).toHaveBeenCalledTimes(1);
+  });
+
   it('never throws when the store fails', async () => {
     memoryStoreMock.addPattern.mockRejectedValue(new Error('quota exceeded'));
     await expect(

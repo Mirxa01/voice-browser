@@ -301,15 +301,24 @@ export async function rememberSuccessfulTask(record: SuccessfulTaskRecord): Prom
     const taskType = categorizeTask(record.task);
     const domain = extractDomain(record.url);
 
+    const description = filterExternalContent(record.task).slice(0, MAX_DESCRIPTION_LENGTH);
+
+    // addPattern already counts this run for an existing pattern with the same
+    // task type, domain and description, so that pattern must not be reinforced again.
+    const alreadyCountedId = (await memoryStore.getPatterns()).find(
+      pattern => pattern.domain === domain && pattern.taskType === taskType && pattern.description === description,
+    )?.id;
+
     await memoryStore.addPattern({
       taskType,
       domain,
-      description: filterExternalContent(record.task).slice(0, MAX_DESCRIPTION_LENGTH),
+      description,
       actionSequence: steps,
       lastUsed: Date.now(),
     });
 
-    for (const patternId of record.reinforcedPatternIds ?? []) {
+    for (const patternId of new Set(record.reinforcedPatternIds ?? [])) {
+      if (patternId === alreadyCountedId) continue;
       await memoryStore.updatePatternSuccess(patternId);
     }
 
